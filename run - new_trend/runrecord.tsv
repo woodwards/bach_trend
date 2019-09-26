@@ -1,0 +1,9 @@
+runname	catchfile	optfile	control	nits	chem1i	chem1wt	chem1ae	chem1re	chem2i	chem2wt	chem2ae	chem2re	catchname	shortname	catchseq	period	periodseq	setname	setseq	gelmanr	elapsed
+allNP1x	tahuna	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Tahunatara	Ta	5	x	1	Ta(x)	5	1.022730163459531	0.04994166666666667
+allNP2x	otama	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Otamakokore	Ot	4	x	1	Ot(x)	4	1.0265051897689799	0.08611388888888889
+allNP3x	waiotap	optionsx.dat	calib	4000	13	1	0.02	0	16	1	0.2	0	Waiotapu	Wp	2	x	1	Wp(x)	2	1.1957436756969189	0.4240938888888889
+allNP4x	pokai	optionsx.dat	calib	4000	13	1	0.02	0	16	1	0.2	0	Pokaiwhenua	Po	3	x	1	Po(x)	3	1.0735215690949995	0.5405155555555555
+allNP5x	piako	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Piako	Pi	8	x	1	Pi(x)	8	1.025205791564042	0.08814472222222221
+allNP6x	waitoa	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waitoa	Wt	7	x	1	Wt(x)	7	1.012572821781595	0.06661472222222221
+allNP7x	waihou	optionsx.dat	calib	4000	13	1	0.02	0	16	1	0.2	0	Waihou	Wh	1	x	1	Wh(x)	1	1.0258137487513725	0.5943869444444445
+allNP8x	puniu	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Puniu	Pu	6	x	1	Pu(x)	6	1.0159461474225466	0.08129361111111112
