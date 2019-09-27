@@ -1,7 +1,0 @@
-R version 3.5.3 (2019-03-11)
-Stan version 2.19.1
-8 lines in runlist.dat
-1 tahuna_data.dat optionsx.dat Thu 26 Sep 09:16:32 2019
-iterations = 0
-max(Rhat)  = unchanged
-elapsed(h) = 0

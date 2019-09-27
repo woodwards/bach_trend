@@ -417,5 +417,5 @@ save_plot(file_name, temp, base_height=9, base_width=12)
 # kill_all_Rscript_s()
 
 # plots
-source('box_plots15.r')
+# source('box_plots15.r') # bug to be fixed FIXME
 source('trace_plots13.r')

@@ -1,0 +1,31 @@
+Welcome to the BACH Bayesian Chemistry-assisted Hydrograph separation code
+
+  Bayesian chemistry-assisted hydrograph separation (BACH) and nutrient load partitioning 
+  from monthly stream phosphorus and nitrogen concentrations.
+  Simon J. R. Woodward (DairyNZ Ltd) and Roland Stenger (Lincoln Agritech Ltd)
+  Stochastic Environmental Research and Risk Assessment
+  December 2018, Volume 32, Issue 12, pp 3475–3501
+  https://doi.org/10.1007/s00477-018-1612-3
+
+You need to install R, RStudio, RTools, and then the packages used by the code, including rstan. See here for instructions:
+https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+
+If you want to clone the project and use version control (git, github) you will need to set it up as explained here:
+https://support.rstudio.com/hc/en-us/articles/200532077-Version-Control-with-Git-and-SVN
+I recommend using an ssh key for authentication. Or you can just download the project files to your computer.
+
+Once you have cloned and/or downloaded the repository from Github you should be able to open the RStudio project (bach_constant.Rproj) in RStudio. You should then be able to open the bach_driver.r file which is the main file. Sourcing this script should run the “run – eckhardt_priors_narrow” scenario without you needing to do anything else. It is set up to run quickly, so some of the sites will give non-convergance warnings.
+
+Most scenario outputs will be produced, but there is currently an issue preventing the boxplots from being generated.
+
+To set up your own runs and scenarios you need to provide:
+(1) a scenario folder
+(2) a line in bachrunlist.dat for each run
+(3) data.dat files in the data folder (you can use the same data file for multiple runs)
+(4) options.dat files in the data folder (you can use the same options file for multiple runs) 
+(5) you will need to write your own read_data.r script.
+(6) you will need to set from_scratch <- TRUE the first time to create the output files.
+(7) you will need to write your own box_plots.r and trace_plots.r scripts.
+
+
+
