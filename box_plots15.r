@@ -5,6 +5,7 @@
 library(tidyverse)
 library(cowplot)
 library(RColorBrewer)
+library(ggthemes)
 
 # path for output
 # out_path <- 'run - eckhardt_priors_narrow/'
@@ -665,4 +666,71 @@ data3 <- data %>%
   summarize(avmm=sum(flow2)/length(unique(year)),
             avcumec=mean(flow))
 
-
+# histograms
+# greens 2 # https://www.color-hex.com/color-palette/5016
+xpale <- "#F0F7DA"
+xlight <- "#C9DF8A"
+xmid <- "#77AB59"
+xdark <- "#36802D"
+xdata <- "#043927" # https://graf1x.com/shades-of-green-color-palette-html-hex-rgb-code/
+xaxis <- "#999999"
+xgrey <- "grey"
+prior_df <- vector("list", length(priortab$parname))
+i <- 1
+additional <- c("grmse1", "grmse2")
+for (i in seq_along(priortab$parname)) {
+  key <- priortab$parname[i]
+  x <- seq(priortab$parmin[i], priortab$parmax[i], length.out = 101)
+  y <- dnorm(x, priortab$parmean[i], priortab$parsd[i])
+  prior_df[[i]] <- tibble(key = factor(key, levels = c(priortab$parname, additional)), x = x, y = y)
+}
+prior_df_raw <- bind_rows(prior_df) 
+my_pretty_breaks <- function(n = 5, ...) {
+  n_default <- n
+  function(x, n = n_default) {
+    minx <- min(x)
+    maxx <- max(x)
+    midx <- (minx + maxx) / 2
+    x2 <- midx + (x - midx) * 0.9
+    breaks <- pretty(x2, n, ...)
+    names(breaks) <- attr(breaks, "labels")
+    breaks
+  }
+}
+rows <- 1:nruns
+i <- 1
+for (i in rows) {
+  runlisti <- runlist %>% 
+    filter(setseq == i)
+  prior_df <- bind_rows(
+    prior_df_raw, 
+    tibble(key = factor(additional, levels = c(priortab$parname, additional)), x = 0, y = 0)
+    ) 
+  print(paste("making par histogram", runlisti$setname))
+  sampledatai <- sampledata %>% 
+    filter(setname == runlisti$setname) %>% 
+    select_at(c(priortab$parname, additional))
+  post_df <- sampledatai %>% 
+    pivot_longer(everything(), names_to = "key", values_to = "value") %>% 
+    mutate(key = factor(key, levels = c(priortab$parname, additional))) 
+  
+  plot1 <- ggplot(data = post_df) +
+    labs(title = runlisti$setname, x = "", y = "") +
+    geom_line(data = prior_df, mapping = aes(x = x, y = y), colour = xmid, size = 1) +
+    geom_histogram(data = post_df, mapping = aes(x = value, y = ..density..), fill = xlight, bins = 30) +
+    geom_line(data = prior_df, mapping = aes(x = x, y = y), colour = xmid, size = 1) +
+    theme_few() +
+    theme(panel.spacing.x = unit(9, "mm"), plot.margin = unit(c(0, 5, 0, 0), "mm")) +
+    # theme(axis.text=element_text(size=9)) +
+    scale_x_continuous(expand = expand_scale(0, 0), breaks = my_pretty_breaks(n = 2, min.n = 2)) +
+    scale_y_continuous(expand = expand_scale(0, 0), breaks = NULL) +
+    facet_wrap(vars(key), scales = "free")
+  # print(plot1)
+  png(paste0(out_path, "/", runlisti$setname, "_histogram.png"),
+      width = 210 * 1.5, height = 210 * 1.5, units = "mm",
+      type = "windows", res = 150 # low res
+  )
+  suppressMessages({print(plot1)})
+  dev.off()
+}
+  

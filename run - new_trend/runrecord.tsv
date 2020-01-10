@@ -1,9 +1,9 @@
 runname	catchfile	optfile	control	nits	chem1i	chem1wt	chem1ae	chem1re	chem2i	chem2wt	chem2ae	chem2re	catchname	shortname	catchseq	period	periodseq	setname	setseq	gelmanr	elapsed
-allNP1x	tahuna	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Tahunatara	Ta	5	x	1	Ta(x)	5	1.0160464290195943	0.055468611111111114
-allNP2x	otama	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Otamakokore	Ot	4	x	1	Ot(x)	4	1.0237497955994637	0.0939913888888889
-allNP3x	waiotap	optionsx.dat	calib	4000	13	1	0.02	0	16	1	0.2	0	Waiotapu	Wp	2	x	1	Wp(x)	2	1.3103918569347164	0.4637219444444445
-allNP4x	pokai	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Pokaiwhenua	Po	3	x	1	Po(x)	3	1.0595721069311874	0.1132711111111111
-allNP5x	piako	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Piako	Pi	8	x	1	Pi(x)	8	1.025205791564042	0.07568527777777777
-allNP6x	waitoa	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waitoa	Wt	7	x	1	Wt(x)	7	1.012572821781595	0.05878055555555556
-allNP7x	waihou	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waihou	Wh	1	x	1	Wh(x)	1	1.1549851218756764	0.10195305555555556
-allNP8x	puniu	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Puniu	Pu	6	x	1	Pu(x)	6	1.0159461474225466	0.07760722222222223
+allNP1x	tahuna	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Tahunaatara	Ta	5	x	1	Ta(x)	5	1.021618363911151	0.5043125
+allNP2x	otama	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Otamakokore	Ot	4	x	1	Ot(x)	4	1.014499885111862	0.4487877777777778
+allNP3x	waiotap	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waiotapu	Wp	2	x	1	Wp(x)	2	1.0551227758424635	0.4473613888888888
+allNP4x	pokai	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Pokaiwhenua	Po	3	x	1	Po(x)	3	1.0683995276349756	1.4840775
+allNP5x	piako	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Piako	Pi	8	x	1	Pi(x)	8	1.0240525613760798	0.6395730555555554
+allNP6x	waitoa	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waitoa	Wt	7	x	1	Wt(x)	7	1.0166457888091536	0.40410638888888883
+allNP7x	waihou	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waihou	Wh	1	x	1	Wh(x)	1	1.0418385648680237	0.5745144444444444
+allNP8x	puniu	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Puniu	Pu	6	x	1	Pu(x)	6	1.0255345878020812	0.5220091666666667

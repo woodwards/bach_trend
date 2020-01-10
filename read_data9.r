@@ -14,7 +14,7 @@ period <- c("a"=1, "b"=2, "c"=3, "x"=1)
 periodi <- period[substr(runlist$optfile,8,8)]
 runlist <- runlist %>%
   mutate(
-    catchname=c('Tahunatara', 'Otamakokore', 'Waiotapu', 'Pokaiwhenua', 'Piako', 'Waitoa', 'Waihou', 'Puniu')[catchi],
+    catchname=c('Tahunaatara', 'Otamakokore', 'Waiotapu', 'Pokaiwhenua', 'Piako', 'Waitoa', 'Waihou', 'Puniu')[catchi],
     shortname=c('Ta', 'Ot', 'Wp', 'Po', 'Pi', 'Wt', 'Wh', 'Pu')[catchi],
     catchseq=c(5, 4, 2, 3, 8, 7, 1, 6)[catchi],
     period=substr(optfile,8,8), # a,b,c,x
@@ -47,6 +47,7 @@ for (i in 1:nrow(files)){
                                'Ca', 'Mg', 'K', 'Na', 'Zn', 'HCO3', 'SO4', 'Cl',
                                'Si', 'EC', 'DRP', 'NDP', 'TP', 'NNN', 'NH4', 'TN'))
   keeps <- c('date', 'flow', 'TP', 'TN') # columns to keep
+  splitperiods = FALSE
   temp <- temp[keeps] %>%  
     mutate(
       file=files$fname[i], # add file name
@@ -54,18 +55,24 @@ for (i in 1:nrow(files)){
       shortname=c('Ot', 'Pi', 'Po', 'Pu', 'Ta', 'Wh', 'Wp', 'Wt')[i],
       catchseq=c(4, 8, 3, 6, 5, 1, 2, 7)[i],
       flow2=flow/area*86.4, # mm
-      period=ifelse(date>=37257 & date<=39082,'02-06',
-                    ifelse(date>=39083 & date<=40908,'07-11',
-                           ifelse(date>=40909 & date<=42735,'12-16',
-                                  '02-16'))),
-      period2=ifelse(date>=37257 & date<=39082,'a',
-                     ifelse(date>=39083 & date<=40908,'b',
-                            ifelse(date>=40909 & date<=42735,'c',
-                                   'x'))),
-      periodseq=ifelse(date>=37257 & date<=39082,1,
-                     ifelse(date>=39083 & date<=40908,2,
-                            ifelse(date>=40909 & date<=42735,3,
-                                   1))),
+      period = case_when(
+        !splitperiods ~ '02-16',
+        date>=37257 & date<=39082 ~ '02-06',
+        date>=39083 & date<=40908 ~ '07-11',
+        date>=40909 & date<=42735 ~ '12-16',
+        TRUE ~ NA_character_),
+      period2 = case_when(
+        !splitperiods ~ 'x',
+        date>=37257 & date<=39082 ~ 'a',
+        date>=39083 & date<=40908 ~ 'b',
+        date>=40909 & date<=42735 ~ 'c',
+        TRUE ~ NA_character_),
+      periodseq = case_when(
+        !splitperiods ~ 1,
+        date>=37257 & date<=39082 ~ 1,
+        date>=39083 & date<=40908 ~ 2,
+        date>=40909 & date<=42735 ~ 3,
+        TRUE ~ NA_real_),
       setname=paste(shortname, '(', period2, ')', sep=''),
       rdate=as.Date(date, origin="1899-12-30"),
       year=lubridate::year(rdate),
