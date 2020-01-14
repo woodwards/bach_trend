@@ -715,7 +715,7 @@ for (i in rows) {
     mutate(key = factor(key, levels = c(priortab$parname, additional))) 
   
   plot1 <- ggplot(data = post_df) +
-    labs(title = runlisti$setname, x = "", y = "") +
+    labs(title = runlisti$catchname, x = "", y = "") +
     geom_line(data = prior_df, mapping = aes(x = x, y = y), colour = xmid, size = 1) +
     geom_histogram(data = post_df, mapping = aes(x = value, y = ..density..), fill = xlight, bins = 30) +
     geom_line(data = prior_df, mapping = aes(x = x, y = y), colour = xmid, size = 1) +

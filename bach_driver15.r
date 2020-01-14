@@ -61,6 +61,23 @@ stan_pars <- c('medb0', 'meda1', 'slowb0', 'slowa1',
                'chem2fastb2', 'chem2medb2', 'chem2slowb2',
                'llchem1', 'llchem2')
 
+# priors
+priorwide <- 0.3
+priornarrow <- 0.1
+priortab <- tibble(
+  parname = stan_pars_raw,
+  parmin  = c(rep(0, 4), rep(0, 12), rep(-1, 12)),
+  parmax  = 1,
+  parmean = c(1.0, 0.4, 1.0, 0.7, 
+              0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
+              0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
+              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
+              0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
+  parsd   = c(priornarrow, priorwide, priornarrow, priorwide,
+              rep(priorwide, 6), rep(priorwide, 6),
+              rep(priornarrow, 6), rep(priornarrow, 6))
+)
+
 # record version information
 cat(R.version.string, file=log_file, sep='\n')
 cat(paste('Stan version', stan_version()), file=log_file, sep='\n')
@@ -151,22 +168,7 @@ for (i in rows) {
     wits <- nits # warmup iterations (minimum recommended = 150)
     sits <- 200 # sampling iterations FIXME enough? was 400 for bach
     
-    # // priors
-    priorwide <- 0.3
-    priornarrow <- 0.1
-    priortab <- tibble(
-      parname = stan_pars_raw,
-      parmin  = c(rep(0, 4), rep(0, 12), rep(-1, 12)),
-      parmax  = 1,
-      parmean = c(1.0, 0.4, 1.0, 0.7, 
-                  0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
-                  0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
-                  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
-                  0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-      parsd   = c(priornarrow, priorwide, priornarrow, priorwide,
-                  rep(priorwide, 6), rep(priorwide, 6),
-                  rep(priornarrow, 6), rep(priornarrow, 6))
-      )
+    # priors
     chain_init <- function(){
       x <- rtruncnorm(1, priortab$parmin, priortab$parmax, priortab$parmean, priortab$parsd)
       names(x) <- priortab$parname
