@@ -540,10 +540,11 @@ p1 <- bplot(sampledata, 'grmse1', expression('GRMSE TP Calib'~(mg~L^{-1})*'\n'),
 p2 <- bplot(sampledata, 'vgrmse1', expression('GRMSE TP Valid'~(mg~L^{-1})*'\n'), seq(0,0.07,0.01), 0.02)
 p3 <- bplot(sampledata, 'grmse2', expression('GRMSE TN Calib'~(mg~L^{-1})*'\n'), seq(0,0.7,0.1), 0.2)
 p4 <- bplot(sampledata, 'vgrmse2', expression('GRMSE TN Valid'~(mg~L^{-1})*'\n'), seq(0,0.7,0.1), 0.2)
-plotbox <- plot_grid(p1, p2, p3, p4, nrow=2, align="hv")
+# plotbox <- plot_grid(p1, p2, p3, p4, nrow=2, align="hv")
+plotbox <- plot_grid(p1, p3, nrow=2, align="hv")
 # print(plotbox)
 file_name <- paste(out_path, 'box_', 'grmse', '.png', sep="")
-save_plot(file_name, plotbox, base_height=6, base_width=8)
+save_plot(file_name, plotbox, base_height=6, base_width=4)
 
 # bar plot function
 barplot <- function(sampledata, varname, ylabel, ybreaks, yref1=NA, yref2=NA, ytrans="identity"){
@@ -677,14 +678,17 @@ xaxis <- "#999999"
 xgrey <- "grey"
 prior_df <- vector("list", length(priortab$parname))
 i <- 1
-additional <- c("grmse1", "grmse2")
 for (i in seq_along(priortab$parname)) {
   key <- priortab$parname[i]
-  x <- seq(priortab$parmin[i], priortab$parmax[i], length.out = 101)
-  y <- dnorm(x, priortab$parmean[i], priortab$parsd[i])
-  prior_df[[i]] <- tibble(key = factor(key, levels = c(priortab$parname, additional)), x = x, y = y)
+  x <- seq(priortab$parmin[i], priortab$parmax[i], length.out = 101) * priortab$parscale[i]
+  y <- dnorm(x, priortab$parmean[i] * priortab$parscale[i], priortab$parsd[i] * priortab$parscale[i])
+  x <- case_when(
+    key == "medd1raw" ~ x + (-0.1*log(1-0.5)) * 10,
+    key == "slowd1raw" ~ x + (-0.1*log(1-0.99)) * 10,
+    TRUE ~ x)
+  prior_df[[i]] <- tibble(key = factor(key, levels = priortab$parname), x = x, y = y)
 }
-prior_df_raw <- bind_rows(prior_df) 
+prior_df <- bind_rows(prior_df) 
 my_pretty_breaks <- function(n = 5, ...) {
   n_default <- n
   function(x, n = n_default) {
@@ -698,39 +702,45 @@ my_pretty_breaks <- function(n = 5, ...) {
   }
 }
 rows <- 1:nruns
-i <- 1
 for (i in rows) {
   runlisti <- runlist %>% 
     filter(setseq == i)
-  prior_df <- bind_rows(
-    prior_df_raw, 
-    tibble(key = factor(additional, levels = c(priortab$parname, additional)), x = 0, y = 0)
-    ) 
   print(paste("making par histogram", runlisti$setname))
   sampledatai <- sampledata %>% 
     filter(setname == runlisti$setname) %>% 
-    select_at(c(priortab$parname, additional))
+    select_at(priortab$parname)
+  scalelist <- setNames(priortab$parscale, priortab$parname)
   post_df <- sampledatai %>% 
     pivot_longer(everything(), names_to = "key", values_to = "value") %>% 
-    mutate(key = factor(key, levels = c(priortab$parname, additional))) 
-  
-  plot1 <- ggplot(data = post_df) +
+    mutate(
+      key = factor(key, levels = priortab$parname),
+      value = value * scalelist[key],
+      value = case_when(
+        key == "medd1raw" ~ value + (-0.1*log(1-0.5)) * 10,
+        key == "slowd1raw" ~ value + (-0.1*log(1-0.99)) * 10,
+        TRUE ~ value)
+      ) 
+  labellist <- setNames(priortab$parlabel, priortab$parname)
+  getlabels <- function(x){
+    unname(labellist[x])
+  }
+  plot1 <- ggplot(data = prior_df) +
     labs(title = runlisti$catchname, x = "", y = "") +
-    geom_line(data = prior_df, mapping = aes(x = x, y = y), colour = xmid, size = 1) +
+    geom_line(mapping = aes(x = x, y = y), colour = xmid, size = 1) +
     geom_histogram(data = post_df, mapping = aes(x = value, y = ..density..), fill = xlight, bins = 30) +
-    geom_line(data = prior_df, mapping = aes(x = x, y = y), colour = xmid, size = 1) +
+    geom_line(mapping = aes(x = x, y = y), colour = xmid, size = 1) +
     theme_few() +
     theme(panel.spacing.x = unit(9, "mm"), plot.margin = unit(c(0, 5, 0, 0), "mm")) +
     # theme(axis.text=element_text(size=9)) +
     scale_x_continuous(expand = expand_scale(0, 0), breaks = my_pretty_breaks(n = 2, min.n = 2)) +
     scale_y_continuous(expand = expand_scale(0, 0), breaks = NULL) +
-    facet_wrap(vars(key), scales = "free")
+    facet_wrap(vars(key), nrow = 4, scales = "free", labeller = labeller(key = getlabels))
   # print(plot1)
   png(paste0(out_path, "/", runlisti$setname, "_histogram.png"),
-      width = 210 * 1.5, height = 210 * 1.5, units = "mm",
-      type = "windows", res = 150 # low res
+      width = 210 * 1.5, height = 210 * 1, units = "mm",
+      type = "windows", res = 600
   )
-  suppressMessages({print(plot1)})
+  print(plot1)
   dev.off()
 }
   

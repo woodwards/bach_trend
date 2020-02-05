@@ -134,14 +134,14 @@ transformed parameters { // additional parameters to be used by the model
   // real<lower=0.0, upper=1.0> slowb0raw;
   // real<lower=-0.1*log(1-0.99), upper=-0.1*log(1-0.9999)> slowd1raw;       
   
-  medd1scale = (-0.1*log(1-0.5)) + ((-0.1*log(1-0.99)) - (-0.1*log(1-0.5))) * medd1raw;
+  medd1scale = (-0.1*log(1-0.5)) + ((-0.1*log(1-0.99)) - (-0.1*log(1-0.5))) * medd1raw; // = 0.1*ln(1-meda1)
   meda1 = (1-exp(-fabs(medd1scale)*10)); // for d1>0
   ratio = 1/(1-meda1);
   medb0 = ratio>1 ? medb0raw/ratio : medb0raw;
   medBFImax = medb0/(1-meda1);
   medrec = medb0<1 ? meda1/(1-medb0) : 0;
   
-  slowd1scale = (-0.1*log(1-0.99)) + ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * slowd1raw;
+  slowd1scale = (-0.1*log(1-0.99)) + ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * slowd1raw;// = 0.1*ln(1-slowa1)
   slowa1 = (1-exp(-fabs(slowd1scale)*10)); // for d1>0
   ratio = 1/(1-slowa1);
   slowb0 = ratio>1 ? slowb0raw/ratio : slowb0raw;

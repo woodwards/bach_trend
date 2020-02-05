@@ -10,6 +10,7 @@ library(lubridate)
 library(lfstat)
 library(FlowScreen)
 library(RColorBrewer)
+library(naniar)
 
 # path for output
 # out_path <- 'run - eckhardt_priors_narrow/'
@@ -97,7 +98,7 @@ TFbreaks <- flowbreaks * 1;
 data_file_name <- paste(runlist$catchfile[i], '_data.dat', sep='')
 opt_file_name <- runlist$optfile[i]
 print(paste(data_file_name, "+", opt_file_name))
-
+  
 # assemble run options/data into vectors (?)
 arun <- runlist[i, ]
 adata <- data[grep(pattern=data_file_name, x=data$file), ]
@@ -180,8 +181,83 @@ aah <- p0 +
 file_name <- paste(out_path, setname, '_traces.rds', sep='')
 if (file.exists(file_name)){
   
+# simple trend analysis on adata
+print("Simple trend analysis")
+tdata <- adata %>% 
+  select(shortname, TF, TP, TN, x, xdate) %>%
+  filter(x %in% c(startcalib:endcalib)) %>%
+  mutate(
+    day=day(xdate),
+    month=month(xdate),
+    year=year(xdate)
+  ) 
+qflows <- quantile(tdata$TF, c(0.05, 0.50, 0.95))
+tyear <- tibble(year = unique(tdata$year)) %>% 
+  mutate(
+    shortname = tdata$shortname[1],
+    TP05 = NA_real_, 
+    TP50 = NA_real_, 
+    TP95 = NA_real_, 
+    TN05 = NA_real_, 
+    TN50 = NA_real_, 
+    TN95 = NA_real_
+  )
+j <- 1
+for (j in 1:nrow(tyear)){
+  tdatai <- tdata %>% 
+    filter(year == tyear$year[j]) %>% 
+    drop_na()
+  # modelTP <- loess(TP ~ TF, data = tdatai, control = loess.control(surface = "interpolate"))
+  # modelTN <- loess(TN ~ TF, data = tdatai, control = loess.control(surface = "interpolate"))
+  if (nrow(tdatai) > 3){
+    modelTP <- lm(TP ~ poly(TF, 3), data = tdatai)
+    modelTN <- lm(TN ~ poly(TF, 3), data = tdatai)
+    tdatai$modelTP <- predict(modelTP, tdatai)
+    tdatai$modelTN <- predict(modelTN, tdatai)
+    ggplot(tdatai) +
+      geom_point(mapping = aes(x = TF, y = TP)) +
+      geom_line(mapping = aes(x = TF, y = modelTP), colour = "red")
+    ggplot(tdatai) +
+      geom_point(mapping = aes(x = TF, y = TN)) +
+      geom_line(mapping = aes(x = TF, y = modelTN), colour = "blue")
+    tyear$TP05[j] <- predict(modelTP, data.frame(TF = qflows[1]))
+    tyear$TP50[j] <- predict(modelTP, data.frame(TF = qflows[2]))
+    tyear$TP95[j] <- predict(modelTP, data.frame(TF = qflows[3]))
+    tyear$TN05[j] <- predict(modelTN, data.frame(TF = qflows[1]))
+    tyear$TN50[j] <- predict(modelTN, data.frame(TF = qflows[2]))
+    tyear$TN95[j] <- predict(modelTN, data.frame(TF = qflows[3]))
+  }
+}
+ggplot(tyear) +
+  labs(title = paste(tyear$shortname[1], "TP")) +
+  geom_line(mapping = aes(x = year, y = TP05), colour = "blue") +
+  geom_line(mapping = aes(x = year, y = TP50), colour = "green") +
+  geom_line(mapping = aes(x = year, y = TP95), colour = "red") 
+ggplot(tyear) +
+  labs(title = paste(tyear$shortname[1], "TN")) +
+  geom_line(mapping = aes(x = year, y = TN05), colour = "blue") +
+  geom_line(mapping = aes(x = year, y = TN50), colour = "green") +
+  geom_line(mapping = aes(x = year, y = TN95), colour = "red") 
+
 # read traces
 traces <- read_rds(file_name)
+
+# read quartiles from previous run to compare
+# old_path <- "../bach_constant/run - eckhardt_priors_narrow/"
+old_path <- paste0(out_path, "/old_quartiles/")
+old_quartiles <- paste0(old_path, aalloptions$setname, "_quartiles.rds")
+old_quartiles <- str_replace(old_quartiles, "\\(x\\)", c("(a)", "(b)", "(c)"))
+old_fits <- vector("list", 3)  
+old_fits[[1]] <- readRDS(old_quartiles[1]) %>% mutate(xdate = dmy("1-July-2004")) %>% slice(4:8)
+if (file.exists(old_quartiles[2])){
+  old_fits[[2]] <- readRDS(old_quartiles[2]) %>% mutate(xdate = dmy("1-July-2009")) %>% slice(4:8)
+} else {
+  old_fits[[2]] <- readRDS(old_quartiles[1]) %>% 
+    replace_with_na_all(~TRUE) %>% 
+    mutate(xdate = dmy("1-July-2009")) %>% slice(4:8)
+}
+old_fits[[3]] <- readRDS(old_quartiles[3]) %>% mutate(xdate = dmy("1-July-2014")) %>% slice(4:8)
+old_box <- bind_rows(old_fits) %>% mutate(pc=rep(c('2.5%', '25%', '50%', '75%', '97.5%'), 3))
 
 # this is probably a better approach, use a single data frame for all variables
 # temp <- traces %>%
@@ -329,6 +405,19 @@ p4 <- ggplot() +
   geom_line(data=y4, mapping=aes(x=xdate, y=TP, colour=pc)) +
   geom_point(data=adata, mapping=aes(x=xdate, y=TP)) 
 
+p4r <- ggplot() +
+  labs(title='', y='TP residual '~(mg~L^{-1}), x='', colour='Percentile') +
+  theme_cowplot() +
+  theme(legend.position='none', plot.margin=unit(c(0, 0.3, 0, 0), 'cm'), plot.title=element_blank()) +
+  panel_border(colour='black') +  
+  # scale_colour_manual(values=c('orange','firebrick','darkred','firebrick','orange')) +
+  scale_colour_manual(values=tpcol[sort]) +
+  scale_x_date(limits=daterange, date_labels='%Y', date_breaks='1 year') +
+  scale_y_continuous(expand=c(0, 0), limits=TPlimits, breaks=TPbreaks) +
+  geom_ribbon(data=y4, mapping=aes(x=xdate, ymin=TP-0.02*tci, ymax=TP+0.02*tci), colour='lightgrey', fill='lightgrey') +
+  geom_line(data=y4, mapping=aes(x=xdate, y=TP, colour=pc)) +
+  geom_point(data=adata, mapping=aes(x=xdate, y=TP)) 
+
 p6 <- ggplot() +
   labs(title='', y='fTP '~(mg~L^{-1}), x='', colour='Percentile') +
   theme_cowplot() +
@@ -338,6 +427,7 @@ p6 <- ggplot() +
   scale_colour_manual(values=tpcol[sort]) +
   scale_x_date(limits=daterange, date_labels='%Y', date_breaks='1 year') +
   scale_y_continuous(expand=c(0, 0), limits=TPlimits, breaks=TPbreaks) +
+  geom_point(data=old_box, mapping=aes(x=xdate, y=chem1fast), colour="grey") +
   geom_line(data=y6, mapping=aes(x=xdate, y=fastTP, colour=pc)) 
 
 p7 <- ggplot() +
@@ -349,6 +439,7 @@ p7 <- ggplot() +
   scale_colour_manual(values=tpcol[sort]) +
   scale_x_date(limits=daterange, date_labels='%Y', date_breaks='1 year') +
   scale_y_continuous(expand=c(0, 0), limits=TPlimits, breaks=TPbreaks) +
+  geom_point(data=old_box, mapping=aes(x=xdate, y=chem1med), colour="grey") +
   geom_line(data=y7, mapping=aes(x=xdate, y=medTP, colour=pc)) 
 
 p8 <- ggplot() +
@@ -360,13 +451,14 @@ p8 <- ggplot() +
   scale_colour_manual(values=tpcol[sort]) +
   scale_x_date(limits=daterange, date_labels='%Y', date_breaks='1 year') +
   scale_y_continuous(expand=c(0, 0), limits=TPlimits, breaks=TPbreaks) +
+  geom_point(data=old_box, mapping=aes(x=xdate, y=chem1slow), colour="grey") +
   geom_line(data=y8, mapping=aes(x=xdate, y=slowTP, colour=pc)) 
 
 temp <- filter(adata, TP>0.4)
 if (nrow(temp)>0){
   p4 <- p4 + # add labelled outliers
     geom_point(data=temp, mapping=aes(x=xdate, y=0.37)) +
-    geom_text(data=temp, mapping=aes(x=xdate, y=0.37, label=as.character(TP)), nudge_x=60) 
+    geom_text(data=temp, mapping=aes(x=xdate, y=0.37, label=as.character(TP)), nudge_x=200) 
 }
 
 # testing
@@ -413,6 +505,7 @@ p9 <- ggplot() +
   scale_colour_manual(values=tncol[sort]) +
   scale_x_date(limits=daterange, date_labels='%Y', date_breaks='1 year') +
   scale_y_continuous(expand=c(0, 0), limits=TNlimits, breaks=TNbreaks) +
+  geom_point(data=old_box, mapping=aes(x=xdate, y=chem2fast), colour="grey") +
   geom_line(data=y9, mapping=aes(x=xdate, y=fastTN, colour=pc)) 
 
 p10 <- ggplot() +
@@ -423,6 +516,7 @@ p10 <- ggplot() +
   scale_colour_manual(values=tncol[sort]) +
   scale_x_date(limits=daterange, date_labels='%Y', date_breaks='1 year') +
   scale_y_continuous(expand=c(0, 0), limits=TNlimits, breaks=TNbreaks) +
+  geom_point(data=old_box, mapping=aes(x=xdate, y=chem2med), colour="grey") +
   geom_line(data=y10, mapping=aes(x=xdate, y=medTN, colour=pc)) 
 
 p11 <- ggplot() +
@@ -433,6 +527,7 @@ p11 <- ggplot() +
   scale_colour_manual(values=tncol[sort]) +
   scale_x_date(limits=daterange, date_labels='%Y', date_breaks='1 year') +
   scale_y_continuous(expand=c(0, 0), limits=TNlimits, breaks=TNbreaks) +
+  geom_point(data=old_box, mapping=aes(x=xdate, y=chem2slow), colour="grey") +
   geom_line(data=y11, mapping=aes(x=xdate, y=slowTN, colour=pc)) 
 
 res5 <- y5 %>%

@@ -49,6 +49,21 @@ stan_pars_raw <- c('medb0raw', 'medd1raw', 'slowb0raw', 'slowd1raw',
                    'chem2fastrawb1', 'chem2medrawb1', 'chem2slowrawb1',
                    'chem1fastrawb2', 'chem1medrawb2', 'chem1slowrawb2', 
                    'chem2fastrawb2', 'chem2medrawb2', 'chem2slowrawb2')
+stan_pars_scale <- c(1, ((-0.1*log(1-0.99)) - (-0.1*log(1-0.5))) * 10, # NOTE -ln(1-a) needs special scaling
+                     1, ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * 10, # NOTE -ln(1-a) needs special scaling
+                     2, 2, 2, 12, 12, 12,
+                     2, 2, 2, 12, 12, 12,
+                     2, 2, 2, 12, 12, 12,
+                     2, 2, 2, 12, 12, 12)
+stan_pars_label <- c('b0,m/(1-a1,m)', '-ln(1-a1,m)', 'b0,s/(1-a1,s)', '-ln(1-a1,s)',
+                     'e0,fTP', 'e0,mTP', 'e0,sTP', 
+                     'e0,fTN', 'e0,mTN', 'e0,sTN',
+                     'e1,fTP', 'e1,mTP', 'e1,sTP', 
+                     'e1,fTN', 'e1,mTN', 'e1,sTN',
+                     'f1,fTP', 'f1,mTP', 'f1,sTP', 
+                     'f1,fTN', 'f1,mTN', 'f1,sTN', 
+                     'f2,fTP', 'f2,mTP', 'f2,sTP', 
+                     'f2,fTN', 'f2,mTN', 'f2,sTN')
 stan_pars <- c('medb0', 'meda1', 'slowb0', 'slowa1', 
                'medBFImax', 'medrec', 'slowBFImax', 'slowrec', 
                'chem1fast0', 'chem1med0', 'chem1slow0', 
@@ -66,6 +81,8 @@ priorwide <- 0.3
 priornarrow <- 0.1
 priortab <- tibble(
   parname = stan_pars_raw,
+  parscale = stan_pars_scale,
+  parlabel = stan_pars_label,
   parmin  = c(rep(0, 4), rep(0, 12), rep(-1, 12)),
   parmax  = 1,
   parmean = c(1.0, 0.4, 1.0, 0.7, 
@@ -315,5 +332,5 @@ if (exists("fit")){
 
 # plot boxplots and traces
 source('box_plots15.r') 
-source('trace_plots13.r')
+source('trace_plots14.r')
 
