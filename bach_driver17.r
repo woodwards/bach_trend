@@ -50,7 +50,7 @@ stan_pars_raw <- c('medb0raw', 'medd1raw', 'slowb0raw', 'slowd1raw',
                    'chem1fastrawb2', 'chem1medrawb2', 'chem1slowrawb2', 
                    'chem2fastrawb2', 'chem2medrawb2', 'chem2slowrawb2')
 stan_pars_scale <- c(1, ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * 10, # NOTE -ln(1-a) needs special scaling
-                     1, ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * 10, # NOTE -ln(1-a) needs special scaling
+                     1, ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.9))) * 10, # NOTE -ln(1-a) needs special scaling
                      2, 2, 2, 12, 12, 12,
                      2, 2, 2, 12, 12, 12,
                      2, 2, 2, 12, 12, 12,
@@ -90,10 +90,24 @@ priortab <- tibble(
               0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-  parsd   = c(priornarrow, priorwide, priornarrow, priorwide,
+  parsd   = c(priornarrow, priorwide, priorwide, priorwide,
               rep(priorwide, 6), rep(priorwide, 6),
               rep(priornarrow, 6), rep(priornarrow, 6))
 )
+
+if (FALSE){
+  medd1raw <- c(0, 0.4, 1)
+  ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * priorwide * 10
+  medd1scale = (-0.1*log(1-0.1)) + ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * medd1raw
+  abs(medd1scale)*10
+  meda1 = (1-exp(-abs(medd1scale)*10))
+  
+  slowd1raw <- c(0, 0.7, 1)
+  ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.9))) * priorwide * 10
+  slowd1scale = (-0.1*log(1-0.9)) + ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.9))) * slowd1raw
+  abs(slowd1scale)*10
+  slowa1 = (1-exp(-fabs(slowd1scale)*10))
+}
 
 # record version information
 cat(R.version.string, file=log_file, sep='\n')

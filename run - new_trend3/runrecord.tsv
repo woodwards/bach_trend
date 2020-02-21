@@ -3,7 +3,7 @@ allNP1x	tahuna	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Tahunaatara	Ta	5	x	
 allNP2x	otama	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Otamakokore	Ot	4	x	1	Ot(x)	4	1.0628784970240976	1.0105125000000001
 allNP3x	waiotap	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waiotapu	Wp	2	x	1	Wp(x)	2	1.0442716500315599	1.4909388888888888
 allNP4x	pokai	optionsx.dat	calib	800	13	1	0.02	0	16	1	0.2	0	Pokaiwhenua	Po	3	x	1	Po(x)	3	1.0645090448986079	1.7699297222222223
-allNP5x	piako	optionsx.dat	calib	800	13	1	0.02	0	16	1	0.2	0	Piako	Pi	8	x	1	Pi(x)	8	1.0073847908480464	1.0426977777777777
+allNP5x	piako	optionsx.dat	calib	800	13	1	0.02	0	16	1	0.2	0	Piako	Pi	8	x	1	Pi(x)	8	1.0312230168252146	1.2241297222222223
 allNP6x	waitoa	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waitoa	Wt	7	x	1	Wt(x)	7	1.03045406528539	0.7245627777777778
 allNP7x	waihou	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Waihou	Wh	1	x	1	Wh(x)	1	1.155596307680963	0.9609547222222222
 allNP8x	puniu	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0	Puniu	Pu	6	x	1	Pu(x)	6	1.026450725224503	1.1113447222222224

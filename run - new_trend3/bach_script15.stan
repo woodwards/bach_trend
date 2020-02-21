@@ -141,7 +141,7 @@ transformed parameters { // additional parameters to be used by the model
   medBFImax = medb0/(1-meda1);
   medrec = medb0<1 ? meda1/(1-medb0) : 0;
   
-  slowd1scale = (-0.1*log(1-0.99)) + ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * slowd1raw;// = 0.1*ln(1-slowa1)
+  slowd1scale = (-0.1*log(1-0.9)) + ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.9))) * slowd1raw;// = 0.1*ln(1-slowa1)
   slowa1 = (1-exp(-fabs(slowd1scale)*10)); // for d1>0
   ratio = 1/(1-slowa1);
   slowb0 = ratio>1 ? slowb0raw/ratio : slowb0raw;
@@ -202,20 +202,14 @@ transformed parameters { // additional parameters to be used by the model
     
     // flow path concs
     alpha = (n-366.0)/(5844.0-366.0);
-    // bach[n,6] =  fmax(eps, chem1fast0*(1-alpha)+chem1fast1*alpha+chem1fastb1*sin(pi()*alpha)+chem1fastb2*sin(2*pi()*alpha));
-    // bach[n,7] =  fmax(eps, chem1med0 *(1-alpha)+chem1med1 *alpha+chem1medb1*sin(pi()*alpha) +chem1medb2*sin(2*pi()*alpha));
-    // bach[n,8] =  fmax(eps, chem1slow0*(1-alpha)+chem1slow1*alpha+chem1slowb1*sin(pi()*alpha)+chem1slowb2*sin(2*pi()*alpha));
-    // bach[n,9] =  fmax(eps, chem2fast0*(1-alpha)+chem2fast1*alpha+chem2fastb1*sin(pi()*alpha)+chem2fastb2*sin(2*pi()*alpha));
-    // bach[n,10] = fmax(eps, chem2med0 *(1-alpha)+chem2med1 *alpha+chem2medb1*sin(pi()*alpha) +chem2medb2*sin(2*pi()*alpha));
-    // bach[n,11] = fmax(eps, chem2slow0*(1-alpha)+chem2slow1*alpha+chem2slowb1*sin(pi()*alpha)+chem2slowb2*sin(2*pi()*alpha));
-    bach[n,6] =  chem1fast0*(1-alpha)+chem1fast1*alpha+chem1fastb1*sin(pi()*alpha)+chem1fastb2*sin(2*pi()*alpha);
-    bach[n,7] =  chem1med0 *(1-alpha)+chem1med1 *alpha+chem1medb1*sin(pi()*alpha) +chem1medb2*sin(2*pi()*alpha);
-    bach[n,8] =  chem1slow0*(1-alpha)+chem1slow1*alpha+chem1slowb1*sin(pi()*alpha)+chem1slowb2*sin(2*pi()*alpha);
-    bach[n,9] =  chem2fast0*(1-alpha)+chem2fast1*alpha+chem2fastb1*sin(pi()*alpha)+chem2fastb2*sin(2*pi()*alpha);
-    bach[n,10] = chem2med0 *(1-alpha)+chem2med1 *alpha+chem2medb1*sin(pi()*alpha) +chem2medb2*sin(2*pi()*alpha);
-    bach[n,11] = chem2slow0*(1-alpha)+chem2slow1*alpha+chem2slowb1*sin(pi()*alpha)+chem2slowb2*sin(2*pi()*alpha);
+    bach[n,6] =  fmax(eps, chem1fast0*(1-alpha)+chem1fast1*alpha+chem1fastb1*sin(pi()*alpha)+chem1fastb2*sin(2*pi()*alpha));
+    bach[n,7] =  fmax(eps, chem1med0 *(1-alpha)+chem1med1 *alpha+chem1medb1*sin(pi()*alpha) +chem1medb2*sin(2*pi()*alpha));
+    bach[n,8] =  fmax(eps, chem1slow0*(1-alpha)+chem1slow1*alpha+chem1slowb1*sin(pi()*alpha)+chem1slowb2*sin(2*pi()*alpha));
+    bach[n,9] =  fmax(eps, chem2fast0*(1-alpha)+chem2fast1*alpha+chem2fastb1*sin(pi()*alpha)+chem2fastb2*sin(2*pi()*alpha));
+    bach[n,10] = fmax(eps, chem2med0 *(1-alpha)+chem2med1 *alpha+chem2medb1*sin(pi()*alpha) +chem2medb2*sin(2*pi()*alpha));
+    bach[n,11] = fmax(eps, chem2slow0*(1-alpha)+chem2slow1*alpha+chem2slowb1*sin(pi()*alpha)+chem2slowb2*sin(2*pi()*alpha));
 
-    // flow path slopes (dconc/dalpha)
+    // flow path conc slopes (dconc/dalpha)
     bach[n,12] = -chem1fast0+chem1fast1+chem1fastb1*cos(pi()*alpha)*pi()+chem1fastb2*cos(2*pi()*alpha)*2*pi();
     bach[n,13] = -chem1med0 +chem1med1 +chem1medb1*cos(pi()*alpha)*pi() +chem1medb2*cos(2*pi()*alpha)*2*pi();
     bach[n,14] = -chem1slow0+chem1slow1+chem1slowb1*cos(pi()*alpha)*pi()+chem1slowb2*cos(2*pi()*alpha)*2*pi();
@@ -244,7 +238,7 @@ model { // compare model with data
   // priors
   medb0raw ~ normal(1.0, priornarrow); // see Priors.xlsx for calculations
   medd1raw ~ normal(0.4, priorwide); 
-  slowb0raw ~ normal(1.0, priornarrow);
+  slowb0raw ~ normal(1.0, priorwide);
   slowd1raw ~ normal(0.7, priorwide); 
   chem1fastraw0 ~ normal(0.2/2.0, priorwide); 
   chem1medraw0 ~ normal(0.1/2.0, priorwide); 

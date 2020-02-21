@@ -738,7 +738,7 @@ for (i in rows) {
   # print(plot1)
   png(paste0(out_path, "/", runlisti$setname, "_histogram.png"),
       width = 210 * 1.5, height = 210 * 1, units = "mm",
-      type = "windows", res = 600
+      type = "windows", res = 300 # FIXME res = 600
   )
   print(plot1)
   dev.off()

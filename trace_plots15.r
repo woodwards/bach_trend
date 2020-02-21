@@ -115,7 +115,7 @@ for (i in rows) {
   aalloptions <- cbind(arun, aoptions, aarea) # combine into one data table
   startcalib <- aalloptions$startcalib
   endcalib <- aalloptions$endcalib
-  catchname <- aalloptions$catchname
+  catchname <- aalloptions$catchname %>% print()
   setname <- aalloptions$setname
   keeps <- c("startrun", "startcalib", "endcalib", "startvalid", "endvalid")
   intoptions <- as.vector(t(aalloptions[keeps]))
@@ -311,8 +311,13 @@ for (i in rows) {
         yearStart <- eList$INFO$DecLow
         yearEnd <- eList$INFO$DecHigh
         # capture output of plot
-        print(Solute)
-        wrtds[[Solute]] <- plotConcTimeSmooth(eList, q1, q2, q3, centerDate, yearStart, yearEnd, printValues = TRUE, minNumObs = 60, minNumUncen = 30) %>% # key!
+        # print(Solute)
+        wrtdscol <- "grey"
+        wrtds[[Solute]] <- plotConcTimeSmooth(eList, q1, q2, q3, centerDate, yearStart, yearEnd, 
+                                              printValues = TRUE, 
+                                              minNumObs = 60, 
+                                              minNumUncen = 30, 
+                                              windowY = 5) %>% # key!
           setNames(c("year", "low", "med", "high")) %>% 
           mutate(date = ymd(paste0(floor(year), centerDate))) 
         if (FALSE){
@@ -650,6 +655,9 @@ for (i in rows) {
       rlm(formula, data, weights = weight, method = "M")
     }
 
+    # y4s <- y4s %>% 
+    #   filter(xdate >= dmy("01012005"))
+    
     p4r2 <- ggplot() +
       labs(title = "", y = "TP " ~ (mg ~ L^{-1}), x = "Model Median TP " ~ (mg ~ L^{-1}), colour = "Percentile") +
       theme_cowplot() +
@@ -717,9 +725,11 @@ for (i in rows) {
       scale_x_date(limits = daterange, date_labels = "%Y", date_breaks = "1 year") +
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
-      geom_point(data = old_box, mapping = aes(x = xdate, y = chem1fast), colour = "grey") +
-      geom_line(data = y6, mapping = aes(x = xdate, y = fastTP, colour = pc)) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = "black", linetype = 2)
+      geom_point(data = old_box, mapping = aes(x = xdate, y = chem1fast), shape = 1) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = y6, mapping = aes(x = xdate, y = fastTP, colour = pc)) 
     p12 <- ggplot() +
       labs(title = "", y = "dfTP ", x = "", colour = "Percentile") +
       theme_cowplot() +
@@ -743,9 +753,11 @@ for (i in rows) {
       scale_x_date(limits = daterange, date_labels = "%Y", date_breaks = "1 year") +
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
-      geom_point(data = old_box, mapping = aes(x = xdate, y = chem1med), colour = "grey") +
-      geom_line(data = y7, mapping = aes(x = xdate, y = medTP, colour = pc)) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = "black", linetype = 2)
+      geom_point(data = old_box, mapping = aes(x = xdate, y = chem1med), shape = 1) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = y7, mapping = aes(x = xdate, y = medTP, colour = pc)) 
     p13 <- ggplot() +
       labs(title = "", y = "dmTP ", x = "", colour = "Percentile") +
       theme_cowplot() +
@@ -769,9 +781,11 @@ for (i in rows) {
       scale_x_date(limits = daterange, date_labels = "%Y", date_breaks = "1 year") +
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
-      geom_point(data = old_box, mapping = aes(x = xdate, y = chem1slow), colour = "grey") +
-      geom_line(data = y8, mapping = aes(x = xdate, y = slowTP, colour = pc)) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = "black", linetype = 2)
+      geom_point(data = old_box, mapping = aes(x = xdate, y = chem1slow), shape = 1) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = y8, mapping = aes(x = xdate, y = slowTP, colour = pc)) 
     p14 <- ggplot() +
       labs(title = "", y = "dsTP ", x = "", colour = "Percentile") +
       theme_cowplot() +
@@ -837,6 +851,9 @@ for (i in rows) {
       geom_line(data = y5, mapping = aes(x = xdate, y = TN, colour = pc)) +
       geom_point(data = adata, mapping = aes(x = xdate, y = TN))
 
+    # y5s <- y5s %>% 
+    #   filter(xdate >= dmy("01012005"))
+    
     p5r <- ggplot() +
       labs(title = "", y = "TN residual " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
@@ -895,9 +912,11 @@ for (i in rows) {
       scale_x_date(limits = daterange, date_labels = "%Y", date_breaks = "1 year") +
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
-      geom_point(data = old_box, mapping = aes(x = xdate, y = chem2fast), colour = "grey") +
-      geom_line(data = y9, mapping = aes(x = xdate, y = fastTN, colour = pc)) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = "black", linetype = 2)
+      geom_point(data = old_box, mapping = aes(x = xdate, y = chem2fast), shape = 1) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = y9, mapping = aes(x = xdate, y = fastTN, colour = pc)) 
     p15 <- ggplot() +
       labs(title = "", y = "dfTN ", x = "", colour = "Percentile") +
       theme_cowplot() +
@@ -919,9 +938,11 @@ for (i in rows) {
       scale_x_date(limits = daterange, date_labels = "%Y", date_breaks = "1 year") +
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
-      geom_point(data = old_box, mapping = aes(x = xdate, y = chem2med), colour = "grey") +
-      geom_line(data = y10, mapping = aes(x = xdate, y = medTN, colour = pc)) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = "black", linetype = 2)
+      geom_point(data = old_box, mapping = aes(x = xdate, y = chem2med), shape = 1) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = y10, mapping = aes(x = xdate, y = medTN, colour = pc)) 
     p16 <- ggplot() +
       labs(title = "", y = "dmTN ", x = "", colour = "Percentile") +
       theme_cowplot() +
@@ -943,9 +964,11 @@ for (i in rows) {
       scale_x_date(limits = daterange, date_labels = "%Y", date_breaks = "1 year") +
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
-      geom_point(data = old_box, mapping = aes(x = xdate, y = chem2slow), colour = "grey") +
-      geom_line(data = y11, mapping = aes(x = xdate, y = slowTN, colour = pc)) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = "black", linetype = 2)
+      geom_point(data = old_box, mapping = aes(x = xdate, y = chem2slow), shape = 1) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = y11, mapping = aes(x = xdate, y = slowTN, colour = pc)) 
     p17 <- ggplot() +
       labs(title = "", y = "dsTN ", x = "", colour = "Percentile") +
       theme_cowplot() +
@@ -1050,11 +1073,17 @@ for (i in rows) {
     save_plot(file_name, plotall, base_height = 10, base_width = 8)
 
     title <- ggdraw() + draw_label(catchname, fontface = "bold")
+    plotall <- plot_grid(title, p4, p5, ncol = 1, rel_heights = c(0.3, 1, 1), align = "v")
+    # print(plotall)
+    file_name <- paste(out_path, setname, "_fittrace.png", sep = "")
+    save_plot(file_name, plotall, base_height = 5, base_width = 8)
+    
+    title <- ggdraw() + draw_label(catchname, fontface = "bold")
     plotall <- plot_grid(title, p4r, p5r, ncol = 1, rel_heights = c(0.3, 1, 1), align = "v")
     # print(plotall)
     file_name <- paste(out_path, setname, "_residtime.png", sep = "")
     save_plot(file_name, plotall, base_height = 5, base_width = 8)
-
+    
     title <- ggdraw() + draw_label(catchname, fontface = "bold")
     blank <- ggdraw()
     plotall <- plot_grid(title, blank, p4r2, p5r2, ncol = 2, rel_heights = c(0.1, 1), align = "v")
