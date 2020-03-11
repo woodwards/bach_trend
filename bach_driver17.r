@@ -10,7 +10,7 @@
 
 # remove all variables
 rm(list=ls()) 
-# dev.off() # close figures if they exist
+# dev.off() # close figures if they exist 
 
 suppressMessages({
   library(rstan)
