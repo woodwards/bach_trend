@@ -312,7 +312,8 @@ for (i in rows) {
         yearEnd <- eList$INFO$DecHigh
         # capture output of plot
         # print(Solute)
-        wrtdscol <- "grey"
+        wrtdscol <- "darkgrey"
+        wrtdswt <- 0.5
         wrtds[[Solute]] <- plotConcTimeSmooth(eList, q1, q2, q3, centerDate, yearStart, yearEnd, 
                                               printValues = TRUE, 
                                               minNumObs = 60, 
@@ -335,7 +336,7 @@ for (i in rows) {
 
     # read quartiles from previous run to compare
     # old_path <- "../bach_constant/run - eckhardt_priors_narrow/"
-    old_path <- paste0(out_path, "/old_quartiles/")
+    old_path <- paste0(out_path, "old_quartiles/")
     old_quartiles <- paste0(old_path, aalloptions$setname, "_quartiles.rds")
     old_quartiles <- str_replace(old_quartiles, "\\(x\\)", c("(a)", "(b)", "(c)"))
     old_fits <- vector("list", 3)
@@ -726,9 +727,9 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem1fast), shape = 1) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y6, mapping = aes(x = xdate, y = fastTP, colour = pc)) 
     p12 <- ggplot() +
       labs(title = "", y = "dfTP ", x = "", colour = "Percentile") +
@@ -754,9 +755,9 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem1med), shape = 1) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y7, mapping = aes(x = xdate, y = medTP, colour = pc)) 
     p13 <- ggplot() +
       labs(title = "", y = "dmTP ", x = "", colour = "Percentile") +
@@ -782,9 +783,9 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem1slow), shape = 1) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y8, mapping = aes(x = xdate, y = slowTP, colour = pc)) 
     p14 <- ggplot() +
       labs(title = "", y = "dsTP ", x = "", colour = "Percentile") +
@@ -913,9 +914,9 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem2fast), shape = 1) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y9, mapping = aes(x = xdate, y = fastTN, colour = pc)) 
     p15 <- ggplot() +
       labs(title = "", y = "dfTN ", x = "", colour = "Percentile") +
@@ -939,9 +940,9 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem2med), shape = 1) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y10, mapping = aes(x = xdate, y = medTN, colour = pc)) 
     p16 <- ggplot() +
       labs(title = "", y = "dmTN ", x = "", colour = "Percentile") +
@@ -965,9 +966,9 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem2slow), shape = 1) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y11, mapping = aes(x = xdate, y = slowTN, colour = pc)) 
     p17 <- ggplot() +
       labs(title = "", y = "dsTN ", x = "", colour = "Percentile") +
@@ -1043,12 +1044,13 @@ for (i in rows) {
       coord_cartesian(ylim = flowlimits) +
       geom_line(data = y3, mapping = aes(x = xdate, y = Slow, colour = pc))
 
-    y6$Slow <- filter(y3, pc == "50%")$Slow
-    y6$Medium <- filter(y2, pc == "50%")$Medium
-    aah <- aah +
-      geom_line(data = y6, mapping = aes(x = xdate, y = Medium + Slow), colour = "deepskyblue") + # add bach results
-      geom_line(data = y6, mapping = aes(x = xdate, y = Slow), colour = "orchid") + # add bach results
-      annotate(geom = "label", x = min(y6$xdate) + 120, y = max(TFlimits) * 0.8, label = setname, size = 4) # rewrite label
+    print("WARNING: Simon commented out lines related to separation of hydrograph plot that weren't working")
+    # y6$Slow <- filter(y3, pc == "50%")$Slow 
+    # y6$Medium <- filter(y2, pc == "50%")$Medium
+    # aah <- aah +
+    #   geom_line(data = y6, mapping = aes(x = xdate, y = Medium + Slow), colour = "deepskyblue") + # add bach results
+    #   geom_line(data = y6, mapping = aes(x = xdate, y = Slow), colour = "orchid") + # add bach results
+    #   annotate(geom = "label", x = min(y6$xdate) + 120, y = max(TFlimits) * 0.8, label = setname, size = 4) # rewrite label
 
     # plotflow <- plot_grid(p1, p2, p3, nrow=3, align="v")
     # print(plotflow)

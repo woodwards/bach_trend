@@ -1,4 +1,4 @@
-functions { // internally defined
+functions { // internally defined  
   
 }
 
@@ -238,7 +238,7 @@ model { // compare model with data
   // priors
   medb0raw ~ normal(1.0, priornarrow); // see Priors.xlsx for calculations
   medd1raw ~ normal(0.4, priorwide); 
-  slowb0raw ~ normal(1.0, priorwide);
+  slowb0raw ~ normal(1.0, priornarrow);
   slowd1raw ~ normal(0.7, priorwide); 
   chem1fastraw0 ~ normal(0.2/2.0, priorwide); 
   chem1medraw0 ~ normal(0.1/2.0, priorwide); 

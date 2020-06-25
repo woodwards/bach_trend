@@ -9,7 +9,7 @@
 # - reorganise parameter trace plots
 
 # remove all variables
-rm(list=ls()) 
+# rm(list=ls()) 
 # dev.off() # close figures if they exist 
 
 suppressMessages({
@@ -26,7 +26,7 @@ suppressMessages({
 "%notin%" <- function(x,y)!("%in%"(x,y))
 
 # which run directory?
-out_path <- 'run - new_trend3/'
+out_path <- 'run - new_trend4/'
 print(out_path)
 
 # kill any processes that didn't terminate
@@ -50,7 +50,7 @@ stan_pars_raw <- c('medb0raw', 'medd1raw', 'slowb0raw', 'slowd1raw',
                    'chem1fastrawb2', 'chem1medrawb2', 'chem1slowrawb2', 
                    'chem2fastrawb2', 'chem2medrawb2', 'chem2slowrawb2')
 stan_pars_scale <- c(1, ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * 10, # NOTE -ln(1-a) needs special scaling
-                     1, ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.9))) * 10, # NOTE -ln(1-a) needs special scaling
+                     1, ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * 10, # NOTE -ln(1-a) needs special scaling
                      2, 2, 2, 12, 12, 12,
                      2, 2, 2, 12, 12, 12,
                      2, 2, 2, 12, 12, 12,
@@ -90,23 +90,40 @@ priortab <- tibble(
               0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
-  parsd   = c(priornarrow, priorwide, priorwide, priorwide,
+  parsd   = c(priornarrow, priorwide, priornarrow, priorwide,
               rep(priorwide, 6), rep(priorwide, 6),
               rep(priornarrow, 6), rep(priornarrow, 6))
 )
 
+# calculate values for prior table in paper
 if (FALSE){
-  medd1raw <- c(0, 0.4, 1)
-  ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * priorwide * 10
-  medd1scale = (-0.1*log(1-0.1)) + ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * medd1raw
-  abs(medd1scale)*10
-  meda1 = (1-exp(-abs(medd1scale)*10))
   
-  slowd1raw <- c(0, 0.7, 1)
-  ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.9))) * priorwide * 10
-  slowd1scale = (-0.1*log(1-0.9)) + ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.9))) * slowd1raw
-  abs(slowd1scale)*10
-  slowa1 = (1-exp(-fabs(slowd1scale)*10))
+  medd1raw <- c(0, 0.4, 1) %>% print # min, mean, max of medd1raw
+  medd1scale = (-0.1*log(1-0.1)) + ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * medd1raw # = 0.1*ln(1-meda1)
+  abs(medd1scale)*10 # min, mean, max of ln(1- meda1)
+  ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * priorwide * 10 # sd of ln(1- meda1)
+  meda1 = (1-exp(-abs(medd1scale)*10)) %>% print # min, mean, max of meda1
+
+  medb0raw <- c(0, 1, 1) %>% print # min, mean, max of medb1raw = b0,m/(1-a1.m)
+  ratio = (1/rev(1-meda1)) %>% print
+  medb0 = ifelse(ratio>1 , medb0raw/ratio , medb0raw) %>% print # min, mean, max of medb0
+  
+  medBFImax = (medb0/rev(1-meda1)) %>% print
+  medrec = ifelse(medb0<1 , meda1/(1-medb0) , 0) %>% print # FIXME wrong formula?
+  
+  slowd1raw <- c(0, 0.7, 1) %>% print # min, mean, max, sd
+  slowd1scale = (-0.1*log(1-0.99)) + ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * slowd1raw # = 0.1*ln(1-slowa1)
+  abs(slowd1scale)*10 # min, mean, max of ln(1- slowa1)
+  ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * priorwide * 10 # sd of ln(1- slowa1)
+  slowa1 = (1-exp(-abs(slowd1scale)*10)) %>% print # min, mean, max of slowa1
+
+  slowb0raw <- c(0, 1, 1) %>% print # min, mean, max of slowb1raw = b0,s/(1-a1.s)
+  ratio = (1/rev(1-slowa1)) %>% print
+  slowb0 = ifelse(ratio>1 , slowb0raw/ratio , slowb0raw) %>% print # min, mean, max of slowb0
+  
+  slowBFImax = (slowb0/rev(1-slowa1)) %>% print
+  slowrec = ifelse(slowb0<1 , slowa1/(1-slowb0) , 0) %>% print # FIXME wrong formula?
+  
 }
 
 # record version information
@@ -115,7 +132,8 @@ cat(paste('Stan version', stan_version()), file=log_file, sep='\n')
 
 # init rstan
 rstan_options(auto_write = TRUE)
-options(mc.cores = detectCores())
+options(mc.cores = detectCores() - 1)
+Sys.setenv(LOCAL_CPPFLAGS = '-march=corei7 -mtune=corei7')
 
 # read data files
 source('read_data9.r')
@@ -292,6 +310,7 @@ for (i in rows) {
     cat(paste('iterations =', wits+sits), file=log_file, sep='\n')
     cat(paste('max(Rhat)  =', maxRhat, warning), file=log_file, sep='\n')
     cat(paste('elapsed(h) =', max(runtime$total)/3600), file=log_file, sep='\n')
+    runrecord$nits[i] <- wits+sits
     runrecord$gelmanr[i] <- maxRhat
     runrecord$elapsed[i] <- max(runtime$total)/3600
     
