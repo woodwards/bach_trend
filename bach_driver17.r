@@ -30,7 +30,7 @@ out_path <- 'run - new_trend4/'
 print(out_path)
 
 # kill any processes that didn't terminate
-kill_all_Rscript_s()
+# kill_all_Rscript_s()
 
 # open log_file
 log_file_name <- paste(out_path, 'log', format(Sys.time(), "_%Y%m%d_%H%M"), '.txt', sep='')
@@ -349,7 +349,7 @@ cat(format(Sys.time(), "%a %d %b %H:%M:%S %Y"), file=log_file, sep='\n')
 cat("\n")
 close(log_file)
 showConnections(all=FALSE)
-closeAllConnections() 
+#closeAllConnections() 
 print("Finished.")
 
 # report results of last fit

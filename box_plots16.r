@@ -231,9 +231,9 @@ print(p1)
 
 # pars
 print("making pars box")
-p1 <- bplot(sampledata, 'medb0', 'Medium b0\n', seq(0,1,0.2), c(0,0.5))
+p1 <- bplot(sampledata, 'medb0', 'Medium b0\n', seq(0,1,0.2), c(0,0.9))
 p2 <- bplot(sampledata, 'slowb0', 'Slow b0\n', seq(0,0.005,0.001), c(0,0.01))
-p3 <- bplot(sampledata, 'meda1', 'Medium a1\n', seq(0,1,0.2), c(0.5,0.99))
+p3 <- bplot(sampledata, 'meda1', 'Medium a1\n', seq(0,1,0.2), c(0.1,0.99))
 p4 <- bplot(sampledata, 'slowa1', 'Slow a1\n', seq(0.995,1,0.001), c(0.99,0.9999))
 plotbox <- plot_grid(p1, p2, p3, p4, nrow=2, align="hv")
 # print(plotbox)
@@ -570,7 +570,7 @@ print("making gelman box")
 runfile <- paste(out_path,'runrecord.tsv', sep='')
 runrecord <- read_tsv(runfile, col_types=cols())
 runrecord$setseqf <- factor(runrecord$setseq, levels=c(1:nruns))
-p1 <- barplot(runrecord, 'gelmanr', 'Gelman R\n', seq(0,1.5,0.5), 1.1, 1.0)
+p1 <- barplot(runrecord, 'gelmanr', 'Gelman R\n', seq(0,max(runrecord$gelmanr)+0.5,0.5), 1.1, 1.0)
 temp <- ceiling(max(runrecord$elapsed, na.rm=TRUE))
 p2 <- barplot(runrecord, 'elapsed', 'Elapsed (h)\n', seq(0,temp,0.5), 0, 0)
 plotbox <- plot_grid(p1, p2, nrow=2, align="v")
@@ -748,8 +748,27 @@ for (i in rows) {
 print("reading old sampledata")
 oldsampledata <- readRDS(paste0(out_path,"oldsampledata.rds"))
 
+custombox1top <- function(y) { # for error bar
+  data.frame(ymin=quantile(y,0.025),
+             lower=quantile(y,0.25),
+             middle=quantile(y,0.25),
+             upper=quantile(y,0.25),
+             ymax=quantile(y,0.25),
+             y=y,
+             width=0.4)[1, ]
+}
+custombox1bot <- function(y) { # for error bar
+  data.frame(ymin=quantile(y,0.75),
+             lower=quantile(y,0.75),
+             middle=quantile(y,0.75),
+             upper=quantile(y,0.75),
+             ymax=quantile(y,0.975),
+             y=y,
+             width=0.4)[1, ]
+}
+
 # box plot with medians (which make it a lot slower)
-bplot1 <- function(sampledata, varname, ylabel, ybreaks, yref=0, box_fill="white",
+bplot1 <- function(sampledata, varname, ylabel, ybreaks, yref=0, box_fill=NA,
                    ytrans="identity", median_fill=NA, median_colour=NA, median_alpha=1){
   # medians <- sampledata[, c(varname, "setname", "setseq", "setseqf")] %>%
   #   rename(value=varname) %>%
@@ -801,7 +820,9 @@ bplot1 <- function(sampledata, varname, ylabel, ybreaks, yref=0, box_fill="white
     # stat_boxplot(data=sampledata, mapping=aes_string(x='setseqf', y=varname), 
     #             geom="errorbar", width=0.35) +
     stat_summary(mapping=aes_string(group='setseqf', x='setseqf', y='varname'),
-                 fun.data=custombox1, geom='errorbar') +
+                 fun.data=custombox1top, geom='errorbar') +
+    stat_summary(mapping=aes_string(group='setseqf', x='setseqf', y='varname'),
+                 fun.data=custombox1bot, geom='errorbar') +
     # geom_boxplot(outlier.size=0.5, notch=FALSE, outlier.shape=NA) +
     stat_summary(mapping=aes_string(group='setseqf', x='setseqf', y='varname'),
                  fun.data=custombox2, geom='boxplot', fill=box_fill) +
