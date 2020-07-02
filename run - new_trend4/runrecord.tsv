@@ -6,4 +6,4 @@ allNP4x	pokai	optionsx.dat	calib	1000	13	1	0.02	0	16	1	0.2	0	Pokaiwhenua	Po	3	x	
 allNP5x	piako	optionsx.dat	calib	600	13	1	0.02	0	16	1	0.2	0	Piako	Pi	8	x	1	Pi(x)	8	1.0232806596548651	1.7665525
 allNP6x	waitoa	optionsx.dat	calib	1000	13	1	0.02	0	16	1	0.2	0	Waitoa	Wt	7	x	1	Wt(x)	7	1.1281405644834877	1.6503266666666667
 allNP7x	waihou	optionsx.dat	calib	1000	13	1	0.02	0	16	1	0.2	0	Waihou	Wh	1	x	1	Wh(x)	1	1.0635583382077334	2.230391111111111
-allNP8x	puniu	optionsx.dat	calib	1800	13	1	0.02	0	16	1	0.2	0	Puniu	Pu	6	x	1	Pu(x)	6	2.2571307114172403	4.436561111111112
+allNP8x	puniu	optionsx.dat	calib	1400	13	1	0.02	0	16	1	0.2	0	Puniu	Pu	6	x	1	Pu(x)	6	1.1218772359714235	4.044863888888889

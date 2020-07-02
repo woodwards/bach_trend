@@ -8,10 +8,12 @@
 # - increase weighting of llflow
 # - reorganise parameter trace plots
 
-# remove all variables
-# rm(list=ls()) 
+# remove all variables - try to avoid memory error after run
+rm(list=ls())
 # dev.off() # close figures if they exist 
+# kill_all_Rscript_s() # WARNING --- kills processes in other sessions too!!!
 
+# load libraries
 suppressMessages({
   library(rstan)
   library(tidyverse)
@@ -22,15 +24,12 @@ suppressMessages({
   library(ggthemes)
 })
 
-# functions
-"%notin%" <- function(x,y)!("%in%"(x,y))
-
-# which run directory?
+# set run directory
 out_path <- 'run - new_trend4/'
 print(out_path)
 
-# kill any processes that didn't terminate
-# kill_all_Rscript_s()
+# declare functions
+"%notin%" <- function(x,y)!("%in%"(x,y))
 
 # open log_file
 log_file_name <- paste(out_path, 'log', format(Sys.time(), "_%Y%m%d_%H%M"), '.txt', sep='')

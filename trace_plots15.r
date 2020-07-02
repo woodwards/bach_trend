@@ -145,7 +145,7 @@ for (i in rows) {
   # define date range
   fromdate <- as.Date(intoptions[2], origin = "2000-12-31")
   todate <- as.Date(intoptions[3], origin = "2000-12-31")
-  daterange <- c(fromdate, todate)
+  daterange <- c(fromdate, todate + months(6))
 
   #### do hydrograph ####
 
@@ -727,9 +727,10 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem1fast), shape = 1) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
       geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
+      geom_text(data = wrtds[["TP"]], mapping = aes(x = tail(date,1)+years(1), y = tail(high,1)), colour = wrtdscol, label = "95%") +
       geom_line(data = y6, mapping = aes(x = xdate, y = fastTP, colour = pc)) 
     p12 <- ggplot() +
       labs(title = "", y = "dfTP ", x = "", colour = "Percentile") +
@@ -755,9 +756,10 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TPbreaks) +
       coord_cartesian(ylim = TPlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem1med), shape = 1) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
       geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
+      geom_text(data = wrtds[["TP"]], mapping = aes(x = tail(date,1)+years(1), y = tail(med,1)), colour = wrtdscol, label = "50%") +
+      # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y7, mapping = aes(x = xdate, y = medTP, colour = pc)) 
     p13 <- ggplot() +
       labs(title = "", y = "dmTP ", x = "", colour = "Percentile") +
@@ -784,8 +786,9 @@ for (i in rows) {
       coord_cartesian(ylim = TPlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem1slow), shape = 1) +
       geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
-      geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
+      geom_text(data = wrtds[["TP"]], mapping = aes(x = tail(date,1)+years(1), y = tail(low,1)), colour = wrtdscol, label = "5%") +
+      # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y8, mapping = aes(x = xdate, y = slowTP, colour = pc)) 
     p14 <- ggplot() +
       labs(title = "", y = "dsTP ", x = "", colour = "Percentile") +
@@ -914,9 +917,10 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem2fast), shape = 1) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
       geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
+      geom_text(data = wrtds[["TN"]], mapping = aes(x = tail(date,1)+years(1), y = tail(high,1)), colour = wrtdscol, label = "95%") +
       geom_line(data = y9, mapping = aes(x = xdate, y = fastTN, colour = pc)) 
     p15 <- ggplot() +
       labs(title = "", y = "dfTN ", x = "", colour = "Percentile") +
@@ -940,9 +944,10 @@ for (i in rows) {
       scale_y_continuous(expand = c(0, 0), breaks = TNbreaks) +
       coord_cartesian(ylim = TNlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem2med), shape = 1) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
+      # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
       geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
+      geom_text(data = wrtds[["TN"]], mapping = aes(x = tail(date,1)+years(1), y = tail(med,1)), colour = wrtdscol, label = "50%") +
+      # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y10, mapping = aes(x = xdate, y = medTN, colour = pc)) 
     p16 <- ggplot() +
       labs(title = "", y = "dmTN ", x = "", colour = "Percentile") +
@@ -967,8 +972,9 @@ for (i in rows) {
       coord_cartesian(ylim = TNlimits) +
       geom_point(data = old_box, mapping = aes(x = xdate, y = chem2slow), shape = 1) +
       geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = low), colour = wrtdscol, linetype = 2, size = wrtdswt) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
-      geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
+      geom_text(data = wrtds[["TN"]], mapping = aes(x = tail(date,1)+years(1), y = tail(low,1)), colour = wrtdscol, label = "5%") +
+      # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = med), colour = wrtdscol, linetype = 5, size = wrtdswt) +
+      # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y11, mapping = aes(x = xdate, y = slowTN, colour = pc)) 
     p17 <- ggplot() +
       labs(title = "", y = "dsTN ", x = "", colour = "Percentile") +
