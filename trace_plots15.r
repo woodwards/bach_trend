@@ -19,10 +19,6 @@ library(EGRET) # UGSG trend software
 # out_path <- 'run - eckhardt_priors_narrow/'
 print(out_path)
 
-##### read in data ####
-source("read_data9.r")
-nruns <- nrow(runlist)
-
 # choose rows to run
 rows <- 1:nruns # to run all sites
 ah <- vector("list", nruns) # all hydrographs
@@ -34,66 +30,13 @@ i <- rows[1]
 for (i in rows) {
 
   # set axis options for each set
-  if (i %in% c(1, 9, 17)) { # Tahuna
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 20)
-    flowbreaks <- seq(0, 20, 5)
-  } else if (i %in% c(2, 10, 18)) { # Otama
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 5)
-    flowbreaks <- seq(0, 5, 1)
-  } else if (i %in% c(3, 11, 19)) { # Waiotapu
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 10)
-    flowbreaks <- seq(0, 10, 2)
-  } else if (i %in% c(4, 12, 20)) { # Pokai
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 20)
-    flowbreaks <- seq(0, 20, 5)
-  } else if (i %in% c(5, 13, 21)) { # Piako
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 8)
-    flowbreaks <- seq(0, 8, 2)
-  } else if (i %in% c(6, 14, 22)) { # Waitoa
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 8)
-    flowbreaks <- seq(0, 8, 2)
-  } else if (i %in% c(7, 15, 23)) { # Waihou
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 80)
-    flowbreaks <- seq(0, 80, 20)
-  } else if (i %in% c(8, 16, 24)) { # Puniu
-    TPlimits <- c(0, 0.4)
-    TPbreaks <- seq(0, 0.8, 0.2)
-    TNlimits <- c(0, 6)
-    TNbreaks <- seq(0, 6, 2)
-    flowlimits <- c(0, 60)
-    flowbreaks <- seq(0, 60, 20)
-  } else {
-    stop()
-  }
-
+  TPbreaks <- seq(0, TPmax, 0.2)
+  TPlimits <- range(TPbreak)
+  TNbreaks <- seq(0, TNmax, 1.0)
+  TNlimits <- range(TNbreaks)
+  flowbreaks <- seq(0, 3, 0.5)
+  flowlimits <- range(flowbreaks)
+  
   dTPlimits <- c(-0.1, 0.1)
   dTPbreaks <- seq(-0.1, 0.1, 0.05)
   dTNlimits <- c(-1, 1)
@@ -103,34 +46,41 @@ for (i in rows) {
   TFlimits <- flowlimits * 1
   TFbreaks <- flowbreaks * 1
 
-  data_file_name <- paste(runlist$catchfile[i], "_data.dat", sep = "")
-  opt_file_name <- runlist$optfile[i]
+  data_file_name <- runlist$catchfile[i]
+  opt_file_name <- runlist$datafile[i]
   print(paste(data_file_name, "+", opt_file_name))
 
-  # assemble run options/data into vectors (?)
+  # data
   arun <- runlist[i, ]
-  adata <- data[grep(pattern = data_file_name, x = data$file), ]
-  aarea <- tibble(area = adata$area[1])
-  aoptions <- options[opt_file_name, ]
-  aalloptions <- cbind(arun, aoptions, aarea) # combine into one data table
-  startcalib <- aalloptions$startcalib
-  endcalib <- aalloptions$endcalib
-  catchname <- aalloptions$catchname %>% print()
-  setname <- aalloptions$setname
-  keeps <- c("startrun", "startcalib", "endcalib", "startvalid", "endvalid")
-  intoptions <- as.vector(t(aalloptions[keeps]))
+  temp1 <- flowdata %>% 
+    filter(catch == data_file_name) %>% 
+    select(date, flow) 
+  temp2 <- concdata %>% 
+    filter(catch == data_file_name) %>% 
+    mutate(date = as.Date(date)) %>% 
+    select(date, all_of(c(arun$chem1i, arun$chem2i)))
+  adata <- left_join(temp1, temp2, by = "date")
+  
+  # assemble run options/data into vectors (?)
+  startcalib <- arun$startcalib
+  endcalib <- arun$endcalib
+  catchname <- arun$catchname
+  setname <- arun$setname
+  keeps <- c('startrun', 'startcalib', 'endcalib', 'startvalid', 'endvalid')
+  intoptions <- as.vector(t(arun[keeps]))
   nintoptions <- length(intoptions)
-  keeps <- c("chem1ae", "chem1re", "chem2ae", "chem2re", "area")
-  realoptions <- as.vector(t(aalloptions[keeps]))
+  keeps <- c('chem1ae', 'chem1re', 'chem2ae', 'chem2re', 'area')
+  realoptions <- as.vector(t(arun[keeps]))
   nrealoptions <- length(realoptions)
   date <- as.vector(adata$date)
   ndate <- length(date)
-  flow <- as.vector(adata$flow)
-  TP <- as.vector(adata$TP)
-  TN <- as.vector(adata$TN)
-  meanTPcalib <- mean(TP[startcalib:endcalib], na.rm = TRUE)
-  meanTNcalib <- mean(TN[startcalib:endcalib], na.rm = TRUE)
-  meanTFcalib <- mean(flow[startcalib:endcalib])
+  flow <- as.vector(adata$flow / 1000)
+  TP <- as.vector(adata %>% pull(arun$chem1i) / 1000)
+  TN <- as.vector(adata %>% pull(arun$chem2i) / 1000)
+  # rain <- as.vector(adata$rain)
+  # pet <- as.vector(adata$pet)
+  meanTPcalib <- mean(TP[startcalib:endcalib], na.rm=TRUE)
+  meanTNcalib <- mean(TN[startcalib:endcalib], na.rm=TRUE)
   TP[is.na(TP)] <- -1 # stan doesn't understand NA
   TN[is.na(TN)] <- -1 # stan doesn't understand NA
 

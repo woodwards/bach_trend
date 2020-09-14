@@ -8,20 +8,7 @@ library(RColorBrewer)
 library(ggthemes)
 
 # path for output
-# out_path <- 'run - eckhardt_priors_narrow/'
 print(out_path)
-
-# years of simulation
-nyears <- 15
-print(paste(nyears, "years"))
-
-# functions
-"%notin%" <- function(x,y)!("%in%"(x,y))
-
-# read in data
-print("reading data")
-source('read_data9.r')
-nruns <- nrow(runlist)
 
 # read in model samples
 print("organising data")
@@ -29,21 +16,26 @@ rows <- 1:nruns
 datalist <- list()
 for (i in rows) {
 
-  # write header
-  data_file_name <- paste(runlist$catchfile[i], '_data.dat', sep='')
-  opt_file_name <- runlist$optfile[i]
+  # 
+  data_file_name <- runlist$catchfile[i]
+  opt_file_name <- runlist$datafile[i]
 
-  # assemble run options/data into vectors (?)
+  # data
   arun <- runlist[i, ]
-  adata <- data[grep(pattern=data_file_name, x=data$file), ]
-  aarea <- tibble(area=adata$area[1])
-  aoptions <- options[opt_file_name, ]
-  aalloptions <- cbind(arun, aoptions, aarea) # combine into one data table
-  startcalib <- aalloptions$startcalib
-  endcalib <- aalloptions$endcalib
-  catchname <- aalloptions$catchname
-  setname <- aalloptions$setname
-  setseq <- aalloptions$setseq
+  temp1 <- flowdata %>% 
+    filter(catch == data_file_name) %>% 
+    select(date, flow) 
+  temp2 <- concdata %>% 
+    filter(catch == data_file_name) %>% 
+    mutate(date = as.Date(date)) %>% 
+    select(date, all_of(c(arun$chem1i, arun$chem2i)))
+  adata <- left_join(temp1, temp2, by = "date")
+  startcalib <- arun$startcalib
+  endcalib <- arun$endcalib
+  nyears <- arun$nyears
+  catchname <- arun$catchname
+  setname <- arun$setname
+  setseq <- arun$setseq
   
   # read samples
   temp <- read_rds(paste(out_path, setname, '_samples.rds', sep=''))
@@ -116,31 +108,10 @@ median_colour <- NA
 median_alpha <- 1
 
 # handle number of runs
-if (nrow(runlist)==24){
-  xlabels <- c('','Wh','',
-               '','Wp','',
-               '','Po','',
-               '','Ot','',
-               '','Ta','',
-               '','Pu','',
-               '','Wt','',
-               '','Pi','')
-  xint <- c(3.5,6.5,9.5,12.5,15.5,18.5,21.5)
-  barwidth <- 2.2
-  barfilter <- seq(2,nruns,3)
-}else {
-  xlabels <- c('Wh',
-               'Wp',
-               'Po',
-               'Ot',
-               'Ta',
-               'Pu',
-               'Wt',
-               'Pi')
-  xint <- c(1.5,2.5,3.5,4.5,5.5,6.5,7.5)
-  barwidth <- 0.7
-  barfilter <- 1:nruns
-}
+xlabels <- runlist$shortname
+xint <- 2:nruns - 0.5
+barwidth <- 0.7
+barfilter <- 1:nruns
 
 # box plot. do it using a function
 bplot <- function(sampledata, varname, ylabel, ybreaks, yref=0, ytrans="identity"){
@@ -744,110 +715,3 @@ for (i in rows) {
   dev.off()
 }
   
-# get old sampledata for comparison
-print("reading old sampledata")
-oldsampledata <- readRDS(paste0(out_path,"oldsampledata.rds"))
-
-custombox1top <- function(y) { # for error bar
-  data.frame(ymin=quantile(y,0.025),
-             lower=quantile(y,0.25),
-             middle=quantile(y,0.25),
-             upper=quantile(y,0.25),
-             ymax=quantile(y,0.25),
-             y=y,
-             width=0.4)[1, ]
-}
-custombox1bot <- function(y) { # for error bar
-  data.frame(ymin=quantile(y,0.75),
-             lower=quantile(y,0.75),
-             middle=quantile(y,0.75),
-             upper=quantile(y,0.75),
-             ymax=quantile(y,0.975),
-             y=y,
-             width=0.4)[1, ]
-}
-
-# box plot with medians (which make it a lot slower)
-bplot1 <- function(sampledata, varname, ylabel, ybreaks, yref=0, box_fill=NA,
-                   ytrans="identity", median_fill=NA, median_colour=NA, median_alpha=1){
-  # medians <- sampledata[, c(varname, "setname", "setseq", "setseqf")] %>%
-  #   rename(value=varname) %>%
-  #   group_by(catchnamef) %>%
-  #   mutate(median=median(value, na.rm=TRUE))
-  if (is.na(median_fill)){
-    sampledata2 <- sampledata %>%
-      rename(varname=varname) %>%
-      select(varname, catchnamef, setseqf, setseq) %>%
-      mutate(median=NA_real_)
-  } else {
-    # this is very slow!!! because lots of copies of median??
-    sampledata2 <- sampledata %>%
-      rename(varname=varname) %>%
-      select(varname, catchnamef, setseqf, setseq) %>%
-      group_by(catchnamef) %>%
-      mutate(median=median(varname, na.rm=TRUE)) %>%
-      arrange(setseq) 
-    sampledata2$median[sampledata2$setseq==lag(sampledata2$setseq)] <- NA_real_ # discard dupes
-    sampledata2$median[sampledata2$setseq %notin% barfilter ] <- NA_real_ # discard dupes
-    oldsampledata2 <- oldsampledata %>%
-      rename(varname=varname) %>%
-      select(varname, catchnamef, setseqf, setseq) %>%
-      group_by(catchnamef) %>%
-      mutate(median=median(varname, na.rm=TRUE)) %>%
-      arrange(setseq) %>% 
-      mutate(
-        # setseq = (setseq - 1) %/% 3 + 1,
-        setseqf = factor(setseq)
-        )
-    oldsampledata2$median[oldsampledata2$setseq==lag(oldsampledata2$setseq)] <- NA_real_ # discard dupes
-    oldsampledata2$median[oldsampledata2$setseq %notin% barfilter ] <- NA_real_ # discard dupes
-  }
-  ggplot(data=sampledata2) +
-    labs(title='', y=ylabel, x='') +
-    theme_cowplot(font_size=10) +
-    theme(axis.ticks.x=element_blank(), 
-          # plot.margin=unit(c(0.2,0.2,0.2,0.2),"cm"),
-          plot.title=element_blank()) +
-    panel_border(colour='black') +  
-    # geom_col(data = oldsampledata2,
-    #          mapping=aes(x=setseq, y=median), position="dodge", size=1, width=barwidth,
-    #          alpha=median_alpha, fill=median_fill, colour=median_colour) +
-    geom_violin(data = oldsampledata2,
-             mapping=aes(x=(setseq+1)/3, y=varname, group=setseqf), width=0.8,
-             alpha=0.4, fill=median_fill, colour=median_colour) +
-    geom_hline(yintercept=yref, linetype=2, colour='black') +
-    geom_vline(xintercept=xint, colour='grey') +
-    # stat_boxplot(data=sampledata, mapping=aes_string(x='setseqf', y=varname), 
-    #             geom="errorbar", width=0.35) +
-    stat_summary(mapping=aes_string(group='setseqf', x='setseqf', y='varname'),
-                 fun.data=custombox1top, geom='errorbar') +
-    stat_summary(mapping=aes_string(group='setseqf', x='setseqf', y='varname'),
-                 fun.data=custombox1bot, geom='errorbar') +
-    # geom_boxplot(outlier.size=0.5, notch=FALSE, outlier.shape=NA) +
-    stat_summary(mapping=aes_string(group='setseqf', x='setseqf', y='varname'),
-                 fun.data=custombox2, geom='boxplot', fill=box_fill) +
-    # stat_summary(data=sampledata, mapping=aes_string(x='setseqf', y=varname), fun.y=median, geom='point', pch=3, size=1) +
-    scale_y_continuous(breaks=ybreaks, limits=c(min(ybreaks), max(ybreaks)), expand=c(0, 0), trans=ytrans) +
-    # geom_segment(mapping=aes(x=setseq-0.5, xend=setseq+0.5, y=median, yend=median), linetype=2, size=1, colour=median_colour) +
-    scale_x_discrete(labels=xlabels, expand=c(0, 0)) 
-}
-
-# flowpc
-print("making flow box vs old data")
-p4 <- bplot1(sampledata, 'fastflowpc', 'Fast Flow Fraction\n', seq(0,1,0.2), median_colour=NA, median_fill=fcol[3], median_alpha=0.2)
-p5 <- bplot1(sampledata, 'medflowpc', 'Medium Flow Fraction\n', seq(0,1,0.2), median_colour=NA, median_fill=mcol[3], median_alpha=0.2)
-p6 <- bplot1(sampledata, 'slowflowpc', 'Slow Flow Fraction\n', seq(0,1,0.2), median_colour=NA, median_fill=scol[3], median_alpha=0.2)
-# plotbox <- plot_grid(p1, p2, p3, nrow=3, align="hv")
-# file_name <- paste(out_path, 'box_', 'flowpc', '.png', sep="")
-# save_plot(file_name, plotbox, base_height=9, base_width=4)
-# flow
-p1 <- bplot1(sampledata, 'fastflowmm', expression('Fast Flow'~(mm~y^{-1})~'\n'), seq(0,1000,200), median_colour=NA, median_fill=fcol[3], median_alpha=0.2)
-p2 <- bplot1(sampledata, 'medflowmm', expression('Medium Flow'~(mm~y^{-1})~'\n'), seq(0,1000,200), median_colour=NA, median_fill=mcol[3], median_alpha=0.2)
-p3 <- bplot1(sampledata, 'slowflowmm', expression('Slow Flow'~(mm~y^{-1})~'\n'), seq(0,1000,200), median_colour=NA, median_fill=scol[3], median_alpha=0.2)
-# plotbox <- plot_grid(p1, p2, p3, nrow=3, align="hv")
-# file_name <- paste(out_path, 'box_', 'flowmm', '.png', sep="")
-# save_plot(file_name, plotbox, base_height=9, base_width=4)
-plotbox <- plot_grid(p1, p4, p2, p5, p3, p6, nrow=3, align="hv")
-file_name <- paste(out_path, 'box_', 'flow_comparison', '.png', sep="")
-save_plot(file_name, plotbox, base_height=9, base_width=8)
-

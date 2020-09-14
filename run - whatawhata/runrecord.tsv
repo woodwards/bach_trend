@@ -1,0 +1,4 @@
+runname	catchfile	datafile	control	nits	chem1i	chem1wt	chem1ae	chem1re	chem2i	chem2wt	chem2ae	chem2re	nchem	startrun	startcalib	endcalib	startvalid	endvalid	area	catchname	shortname	catchseq	setname	setseq	gelmanr	elapsed
+allNP1x	kiripaka	DB4_Kiripaka.xlsx	calib	600	tp	1	0.02	0	tn	1	0.2	0	NA	1	91	9119	9119	9119	1	Kiripaka	Ki	1	Ki	1	1.4808971162277624	2.591766111111111
+allNP2x	mangaotama	PW5_Magaotama.xlsx	calib	600	tp	1	0.02	0	tn	1	0.2	0	NA	1	91	9119	9119	9119	1	Mangaotama	Ma	2	Ma	2	1.0173913007023738	2.0683830555555556
+allNP3x	whakakai	NW5_Whakakai.xlsx	calib	400	tp	1	0.02	0	tn	1	0.2	0	NA	1	91	9119	9119	9119	1	Whakakai	Wh	3	Wh	3	NA	NA

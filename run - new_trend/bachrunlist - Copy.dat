@@ -1,8 +1,0 @@
-allNP1x	tahuna	optionsx.dat	keep	400	13	1	0.02	0	16	1	0.2	0
-allNP2x	otama	optionsx.dat	keep	400	13	1	0.02	0	16	1	0.2	0
-allNP3x	waiotap	optionsx.dat	keep	4000	13	1	0.02	0	16	1	0.2	0
-allNP4x	pokai	optionsx.dat	calib	4000	13	1	0.02	0	16	1	0.2	0
-allNP5x	piako	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0
-allNP6x	waitoa	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0
-allNP7x	waihou	optionsx.dat	calib	4000	13	1	0.02	0	16	1	0.2	0
-allNP8x	puniu	optionsx.dat	calib	400	13	1	0.02	0	16	1	0.2	0

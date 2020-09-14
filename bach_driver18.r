@@ -26,7 +26,7 @@ suppressMessages({
 
 # set run directory
 out_path <- 'run - whatawhata/'
-print(out_path)
+print(paste0("Fitting data in /", out_path))
 
 # declare functions
 "%notin%" <- function(x,y)!("%in%"(x,y))
@@ -37,8 +37,14 @@ log_file <- file(log_file_name, open='w') # delete duplicate log file if necessa
 close(log_file)
 log_file <- file(log_file_name, open='a') # open file for logging
 
+# read data files
+source('read_data10.r')
+cat(paste(nrow(runlist),'lines in runlist.dat'), file=log_file, sep='\n')
+TPmax <- max(pretty(concdata$tp/1000 * 2))
+TNmax <- max(pretty(concdata$tn/1000 * 2))
+
 # model and parameters
-stan_model <- paste(out_path, 'bach_script15.stan', sep='')
+stan_model <- paste(out_path, 'bach_script16.stan', sep='')
 stan_pars_raw <- c('medb0raw', 'medd1raw', 'slowb0raw', 'slowd1raw',
                    'chem1fastraw0', 'chem1medraw0', 'chem1slowraw0', 
                    'chem2fastraw0', 'chem2medraw0', 'chem2slowraw0',
@@ -50,10 +56,10 @@ stan_pars_raw <- c('medb0raw', 'medd1raw', 'slowb0raw', 'slowd1raw',
                    'chem2fastrawb2', 'chem2medrawb2', 'chem2slowrawb2')
 stan_pars_scale <- c(1, ((-0.1*log(1-0.99)) - (-0.1*log(1-0.1))) * 10, # NOTE -ln(1-a) needs special scaling
                      1, ((-0.1*log(1-0.9999)) - (-0.1*log(1-0.99))) * 10, # NOTE -ln(1-a) needs special scaling
-                     2, 2, 2, 12, 12, 12,
-                     2, 2, 2, 12, 12, 12,
-                     2, 2, 2, 12, 12, 12,
-                     2, 2, 2, 12, 12, 12)
+                     TPmax, TPmax, TPmax, TNmax, TNmax, TNmax,
+                     TPmax, TPmax, TPmax, TNmax, TNmax, TNmax,
+                     TPmax, TPmax, TPmax, TNmax, TNmax, TNmax,
+                     TPmax, TPmax, TPmax, TNmax, TNmax, TNmax)
 stan_pars_label <- c('b0,m/(1-a1,m)', '-ln(1-a1,m)', 'b0,s/(1-a1,s)', '-ln(1-a1,s)',
                      'e0,fTP', 'e0,mTP', 'e0,sTP', 
                      'e0,fTN', 'e0,mTN', 'e0,sTN',
@@ -85,8 +91,8 @@ priortab <- tibble(
   parmin  = c(rep(0, 4), rep(0, 12), rep(-1, 12)),
   parmax  = 1,
   parmean = c(1.0, 0.4, 1.0, 0.7, 
-              0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
-              0.2/2.0, 0.1/2.0, 0.1/2.0, 2.0/12.0, 3.0/12.0, 1.0/12.0, 
+              0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 
+              0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 
               0.0, 0.0, 0.0, 0.0, 0.0, 0.0),
   parsd   = c(priornarrow, priorwide, priornarrow, priorwide,
@@ -131,18 +137,25 @@ cat(paste('Stan version', stan_version()), file=log_file, sep='\n')
 
 # init rstan
 rstan_options(auto_write = TRUE)
-options(mc.cores = detectCores() - 1)
-Sys.setenv(LOCAL_CPPFLAGS = '-march=corei7 -mtune=corei7')
+# options(mc.cores = detectCores() - 1)
 
-# read data files
-stop()
-source('read_data.r')
-cat(paste(nrow(runlist),'lines in runlist.dat'), file=log_file, sep='\n')
+if (FALSE){
+  # https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started
+  dotR <- file.path(Sys.getenv("HOME"), ".R")
+  if (!file.exists(dotR)) dir.create(dotR)
+  M <- file.path(dotR, ifelse(.Platform$OS.type == "windows", "Makevars.win", "Makevars"))
+  if (!file.exists(M)) file.create(M)
+  cat(if( grepl("^darwin", R.version$os)) "\nCXX14FLAGS=-O3 -march=native -mtune=native -arch x86_64 -ftemplate-depth-256" else 
+    if (.Platform$OS.type == "windows") "\nCXX14FLAGS=-O3 -mtune=native -mmmx -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2" else
+      "CXX14FLAGS = -fPIC",
+    file = M, sep = "\n", append = TRUE)
+  # Sys.setenv(LOCAL_CPPFLAGS = '-march=native -mtune=native')
+}
 
 # prepare output files
 nruns <- nrow(runlist)
 from_scratch <- all(runlist$control %notin% "keep")
-source('prep_output9.r') 
+source('prep_output10.r') 
 
 # loop through runlist
 rows <- 1:nruns # to run all sites
@@ -154,14 +167,14 @@ for (i in rows) {
   set.seed(i)
   
   # write header
-  data_file_name <- paste(runlist$catchfile[i], '_data.dat', sep='')
-  opt_file_name <- runlist$optfile[i]
+  data_file_name <- runlist$catchfile[i]
+  opt_file_name <- runlist$datafile[i]
   header <- paste(i, data_file_name, opt_file_name, format(Sys.time(), "%a %d %b %H:%M:%S %Y"))
   print(header)
   cat(header, file=log_file, sep='\n')
   
   # get mode
-  mode <- runlist[i, 'control']
+  mode <- runlist$control[i]
   if (mode=='zero') {
     
     # report
@@ -177,43 +190,44 @@ for (i in rows) {
     
   } else if (mode=='calib') {
     
-    # assemble run options/data into vectors (?)
+    # data
     arun <- runlist[i, ]
-    adata <- data[grep(pattern=data_file_name, x=data$file), ]
-    aarea <- tibble(area=adata$area[1])
-    aoptions <- options[opt_file_name, ]
-    aalloptions <- cbind(arun, aoptions, aarea) # combine into one data table
-    startcalib <- aalloptions$startcalib
-    endcalib <- aalloptions$endcalib
-    catchname <- aalloptions$catchname
-    setname <- aalloptions$setname
-    keeps <- c('startrun', 'startcalib', 'endcalib', 'startvalid', 'endvalid')
-    intoptions <- as.vector(t(aalloptions[keeps]))
-    nintoptions <- length(intoptions)
-    keeps <- c('chem1ae', 'chem1re', 'chem2ae', 'chem2re', 'area')
-    realoptions <- as.vector(t(aalloptions[keeps]))
-    nrealoptions <- length(realoptions)
-    date <- as.vector(adata$date)
+    temp1 <- flowdata %>% 
+      filter(catch == data_file_name) %>% 
+      select(date, flow) 
+    temp2 <- concdata %>% 
+      filter(catch == data_file_name) %>% 
+      mutate(date = as.Date(date)) %>% 
+      select(date, all_of(c(arun$chem1i, arun$chem2i)))
+    adata <- left_join(temp1, temp2, by = "date")
+    
+    # assemble run options/data into vectors (?)
+    nyears <- arun$nyears
+    catchname <- arun$catchname
+    setname <- arun$setname
+    ii <- arun$startrun:arun$endcalib
+    jj <- arun$startcalib:arun$endcalib - arun$startrun + 1
+    
+    date <- as.vector(adata$date[ii])
     ndate <- length(date)
-    flow <- as.vector(adata$flow)
-    TP <- as.vector(adata$TP)
-    TN <- as.vector(adata$TN)
-    # rain <- as.vector(adata$rain)
-    # pet <- as.vector(adata$pet)
-    meanTPcalib <- mean(TP[startcalib:endcalib], na.rm=TRUE)
-    meanTNcalib <- mean(TN[startcalib:endcalib], na.rm=TRUE)
+    flow <- as.vector(adata$flow[ii] / 1000)
+    TP <- as.vector(adata[[arun$chem1i]][ii] / 1000)
+    TN <- as.vector(adata[[arun$chem2i]][ii] / 1000)
+    meanTPcalib <- mean(TP[jj], na.rm=TRUE)
+    meanTNcalib <- mean(TN[jj], na.rm=TRUE)
     TP[is.na(TP)] <- -1 # stan doesn't understand NA
     TN[is.na(TN)] <- -1 # stan doesn't understand NA
     
-    # # catch bad pet
-    # j <- which(pet < 0)
-    # pet[j] <- (pet[j-1] + pet[j+1]) / 2
-    # stopifnot(all(pet>=0))
-    
-    # 
-    nits <- aalloptions[1, 'nits']
+    keeps <- c('startrun', 'startcalib', 'endcalib', 'startvalid', 'endvalid')
+    # intoptions <- as.vector(t(arun[keeps]))
+    intoptions <- c(1, arun$startcalib-arun$startrun+1, rep(arun$endcalib-arun$startrun+1, 3)) # ignore valid
+    nintoptions <- length(intoptions)
+    keeps <- c('chem1ae', 'chem1re', 'chem2ae', 'chem2re', 'area')
+    realoptions <- as.vector(t(arun[keeps]))
+    nrealoptions <- length(realoptions)
     
     # fit the model
+    nits <- arun$nits
     wits <- nits # warmup iterations (minimum recommended = 150)
     sits <- 200 # sampling iterations FIXME enough? was 400 for bach
     
@@ -223,40 +237,10 @@ for (i in rows) {
       names(x) <- priortab$parname
       as.list(x)
     }
-    # chain_init <- function(){list(
-    #   medb0raw=rtruncnorm(1, 0, 1, 1.0, priornarrow),
-    #   medd1raw=rtruncnorm(1, 0, 1, 0.4, priorwide),
-    #   slowb0raw=rtruncnorm(1, 0, 1, 1.0, priornarrow),
-    #   slowd1raw=rtruncnorm(1, 0, 1, 0.7, priorwide),
-    #   chem1fastraw0=rtruncnorm(1, 0, 1, 0.2/2.0, priorwide), # initial conc
-    #   chem1medraw0=rtruncnorm(1, 0, 1, 0.1/2.0, priorwide),
-    #   chem1slowraw0=rtruncnorm(1, 0, 1, 0.1/2.0, priorwide),
-    #   chem2fastraw0=rtruncnorm(1, 0, 1, 2.0/12.0, priorwide),
-    #   chem2medraw0=rtruncnorm(1, 0, 1, 3.0/12.0, priorwide),
-    #   chem2slowraw0=rtruncnorm(1, 0, 1, 1.0/12.0, priorwide),
-    #   chem1fastraw1=rtruncnorm(1, 0, 1, 0.2/2.0, priorwide), # final conc
-    #   chem1medraw1=rtruncnorm(1, 0, 1, 0.1/2.0, priorwide),
-    #   chem1slowraw1=rtruncnorm(1, 0, 1, 0.1/2.0, priorwide),
-    #   chem2fastraw1=rtruncnorm(1, 0, 1, 2.0/12.0, priorwide),
-    #   chem2medraw1=rtruncnorm(1, 0, 1, 3.0/12.0, priorwide),
-    #   chem2slowraw1=rtruncnorm(1, 0, 1, 1.0/12.0, priorwide),
-    #   chem1fastrawb1=rtruncnorm(1, -1, 1, 0, priornarrow), # first harmonic
-    #   chem1medrawb1=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem1slowrawb1=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem2fastrawb1=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem2medrawb1=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem2slowrawb1=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem1fastrawb2=rtruncnorm(1, -1, 1, 0, priornarrow), # second harmonic
-    #   chem1medrawb2=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem1slowrawb2=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem2fastrawb2=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem2medrawb2=rtruncnorm(1, -1, 1, 0, priornarrow),
-    #   chem2slowrawb2=rtruncnorm(1, -1, 1, 0, priornarrow)
-    # )}
-    
+
     stan_init <- list(chain_init(), chain_init(), chain_init(), chain_init())
     
-    fit <- stan(stan_model,
+    fit <- stan(file=stan_model,
                 data=c('nintoptions', 'intoptions', 'nrealoptions', 'realoptions',
                        'ndate', 'date', 'flow', 'TP', 'TN', 'meanTPcalib', 'meanTNcalib'),
                 # control=list(adapt_delta=0.90, stepsize=0.005, max_treedepth=15),
@@ -264,8 +248,10 @@ for (i in rows) {
                 iter=wits+sits, 
                 chains=4, 
                 init=stan_init, # needed if priors
-                # cores = 1, # disable parallel processing
+                cores = 1, # disable parallel processing
                 # save_warmup=FALSE, # warmup iterations required for some diagnostics
+                # algorithm = "Fixed_param",
+                # verbose = TRUE,
                 seed=i)
 
     # memory management if necessary
