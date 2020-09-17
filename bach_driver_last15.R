@@ -45,7 +45,7 @@ priors <- priors %>%
          slowrec = if_else(slowb0<1 , slowa1/(1-slowb0) , 0)
   )
 priors <- priors %>%
-  select(stan_pars_raw_plus) %>%
+  select(all_of(stan_pars_raw_plus)) %>%
   gather(priors) %>% 
   mutate(dist="prior") %>% 
   rename(key=priors) %>%

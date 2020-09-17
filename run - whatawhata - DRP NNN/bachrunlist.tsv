@@ -1,0 +1,7 @@
+runname	catchfile	datafile	control	nits	chem1i	chem1wt	chem1ae	chem1re	chem2i	chem2wt	chem2ae	chem2re	nchem	startrun	startcalib	endcalib	startvalid	endvalid	area	nyears	date1
+KiTPTNa	kiripaka	DB4_Kiripaka.xlsx	calib	600	drp	1	0.02	0	no3_n	1	0.2	0	NA	1	1	3287	3287	3287	3.108425	9	1993-01-01
+KiTPTNb	kiripaka	DB4_Kiripaka.xlsx	keep	400	drp	1	0.02	0	no3_n	1	0.2	0	NA	3288	3288	9861	9861	9861	3.108425	18	2002-01-01
+MaTPTNa	mangaotama	PW5_Magaotama.xlsx	calib	600	drp	1	0.02	0	no3_n	1	0.2	0	NA	1	1	3287	3287	3287	2.55335	9	1993-01-01
+MaTPTNb	mangaotama	PW5_Magaotama.xlsx	calib	1000	drp	1	0.02	0	no3_n	1	0.2	0	NA	3288	3288	9861	9861	9861	2.55335	18	2002-01-01
+WhTPTNa	whakakai	NW5_Whakakai.xlsx	keep	400	drp	1	0.02	0	no3_n	1	0.2	0	NA	1	1	3287	3287	3287	2.677825	9	1993-01-01
+WhTPTNb	whakakai	NW5_Whakakai.xlsx	keep	400	drp	1	0.02	0	no3_n	1	0.2	0	NA	3288	3288	9861	9861	9861	2.677825	18	2002-01-01

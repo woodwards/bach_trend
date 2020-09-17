@@ -1,4 +1,7 @@
-runname	catchfile	datafile	control	nits	chem1i	chem1wt	chem1ae	chem1re	chem2i	chem2wt	chem2ae	chem2re	nchem	startrun	startcalib	endcalib	startvalid	endvalid	area	catchname	shortname	catchseq	setname	setseq	gelmanr	elapsed
-allNP1x	kiripaka	DB4_Kiripaka.xlsx	calib	600	tp	1	0.02	0	tn	1	0.2	0	NA	1	91	9119	9119	9119	1	Kiripaka	Ki	1	Ki	1	1.4808971162277624	2.591766111111111
-allNP2x	mangaotama	PW5_Magaotama.xlsx	calib	600	tp	1	0.02	0	tn	1	0.2	0	NA	1	91	9119	9119	9119	1	Mangaotama	Ma	2	Ma	2	1.0173913007023738	2.0683830555555556
-allNP3x	whakakai	NW5_Whakakai.xlsx	calib	400	tp	1	0.02	0	tn	1	0.2	0	NA	1	91	9119	9119	9119	1	Whakakai	Wh	3	Wh	3	NA	NA
+runname	catchfile	datafile	control	nits	chem1i	chem1wt	chem1ae	chem1re	chem2i	chem2wt	chem2ae	chem2re	nchem	startrun	startcalib	endcalib	startvalid	endvalid	area	nyears	catchname	shortname	catchseq	setname	setseq	gelmanr	elapsed
+KiTPTNa	kiripaka	DB4_Kiripaka.xlsx	calib	600	tp	1	0.02	0	tn	1	0.2	0	NA	1	1	3287	3287	3287	3.108425	9	Kiripaka	Ki	1	Ki	1	1.097832968672737	1.601715
+KiTPTNb	kiripaka	DB4_Kiripaka.xlsx	calib	600	tp	1	0.02	0	tn	1	0.2	0	NA	3288	3288	9861	9861	9861	3.108425	18	Kiripaka	Ki	1	Ki	2	1.0458926081134856	1.9152261111111113
+MaTPTNa	mangaotama	PW5_Magaotama.xlsx	calib	1000	tp	1	0.02	0	tn	1	0.2	0	NA	1	1	3287	3287	3287	2.55335	9	Mangaotama	Ma	2	Ma	3	1.0452219494225539	2.411102222222222
+MaTPTNb	mangaotama	PW5_Magaotama.xlsx	calib	1200	tp	1	0.02	0	tn	1	0.2	0	NA	3288	3288	9861	9861	9861	2.55335	18	Mangaotama	Ma	2	Ma	4	1.0168228645272024	6.1756
+WhTPTNa	whakakai	NW5_Whakakai.xlsx	calib	1000	tp	1	0.02	0	tn	1	0.2	0	NA	1	1	3287	3287	3287	2.677825	9	Whakakai	Wh	3	Wh	5	1.9348224499303937	3.2510138888888886
+WhTPTNb	whakakai	NW5_Whakakai.xlsx	calib	600	tp	1	0.02	0	tn	1	0.2	0	NA	3288	3288	9861	9861	9861	2.677825	18	Whakakai	Wh	3	Wh	6	1.0261131460984723	3.1164027777777776

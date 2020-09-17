@@ -19,6 +19,7 @@ as_numeric <- function(x, default = NA_real_) {
 # load run control file (put it in run dir so it gets saved with output)
 file_name <- paste(out_path, "bachrunlist.tsv", sep = "")
 runlist <- read_tsv(file = file_name, col_types = cols())
+nruns <- nrow(runlist)
 
 # add catchment names and ordering information
 catch <- c("kiripaka" = 1, "mangaotama" = 2, "whakakai" = 3)
@@ -26,9 +27,9 @@ catchi <- catch[runlist$catchfile]
 runlist <- runlist %>%
   mutate(
     catchname = c("Kiripaka", "Mangaotama", "Whakakai")[catchi],
-    shortname = c("Ki", "Ma", "Wh")[catchi],
+    shortname = paste0(c("Ki", "Ma", "Wh")[catchi], "(", substr(runname, 7,7), ")"),
     catchseq = c(1, 2, 3)[catchi],
-    setname = shortname,
+    setname = runname,
     setseq = 1:nrow(runlist)
   )
 
@@ -72,6 +73,12 @@ ggplot() +
   geom_jitter(data = concdata %>% filter(is.na(drp)), mapping = aes(x = date, y = 1, colour = catch)) 
 ggplot() +
   geom_line(data = concdata, mapping = aes(x = date, y = tn, colour = catch)) +
+  geom_jitter(data = concdata %>% filter(is.na(no3_n)), mapping = aes(x = date, y = 1, colour = catch)) 
+ggplot() +
+  geom_line(data = concdata, mapping = aes(x = date, y = drp, colour = catch)) +
+  geom_jitter(data = concdata %>% filter(is.na(drp)), mapping = aes(x = date, y = 1, colour = catch)) 
+ggplot() +
+  geom_line(data = concdata, mapping = aes(x = date, y = no3_n, colour = catch)) +
   geom_jitter(data = concdata %>% filter(is.na(no3_n)), mapping = aes(x = date, y = 1, colour = catch)) 
 
 # date range

@@ -18,6 +18,8 @@ library(EGRET) # UGSG trend software
 # path for output
 # out_path <- 'run - eckhardt_priors_narrow/'
 print(out_path)
+TPname <- "DRP"
+TNname <- "NO3-N"
 
 # choose rows to run
 rows <- 1:nruns # to run all sites
@@ -241,8 +243,8 @@ for (i in rows) {
         TF = y0$TF[y0$x == x]
       )
 
+    adata$TP <- adata[[arun$chem1i]]/1000
     adata <- adata %>%
-      mutate(TP=tp/1000) %>% 
       group_by(x) %>%
       mutate(
         TPmed = median(y4$TP[y4$x == x]),
@@ -277,8 +279,8 @@ for (i in rows) {
         TF = y0$TF[y0$x == x]
       )
 
+    adata$TN <- adata[[arun$chem2i]]/1000
     adata <- adata %>%
-      mutate(TN=tn/1000) %>% 
       group_by(x) %>%
       mutate(
         TNmed = median(y5$TN[y5$x == x]),
@@ -415,7 +417,7 @@ for (i in rows) {
     tci <- qt(.975, 7) # how many s.e. for 95% c.i.
 
     p4 <- ggplot() +
-      labs(title = "", y = "TP " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "DRP " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -432,7 +434,7 @@ for (i in rows) {
       geom_point(data = adata, mapping = aes(x = xdate, y = TP))
 
     p4r <- ggplot() +
-      labs(title = "", y = "TP residual " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "DRP residual " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -453,7 +455,7 @@ for (i in rows) {
     #   filter(xdate >= dmy("01012005"))
     
     p4r2 <- ggplot() +
-      labs(title = "", y = "TP " ~ (mg ~ L^{-1}), x = "Model Median TP " ~ (mg ~ L^{-1}), colour = "Percentile") +
+      labs(title = "", y = "DRP " ~ (mg ~ L^{-1}), x = "Model Median DRP " ~ (mg ~ L^{-1}), colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -489,7 +491,7 @@ for (i in rows) {
     }
     
     p4r3 <- ggplot() +
-      labs(title = "", y = "TP " ~ (mg ~ L^{-1}), x = "Flow " ~ (m^3 ~ s^{-1}), colour = "Percentile") +
+      labs(title = "", y = "DRP " ~ (mg ~ L^{-1}), x = "Flow " ~ (m^3 ~ s^{-1}), colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -510,7 +512,7 @@ for (i in rows) {
       geom_point(data = adata, mapping = aes(x = TF, y = TP))
 
     p6 <- ggplot() +
-      labs(title = "", y = "fTP " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "fDRP" ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -526,7 +528,7 @@ for (i in rows) {
       # geom_text(data = wrtds[["TP"]], mapping = aes(x = tail(date,1)+years(1), y = tail(high,1)), colour = wrtdscol, label = "95%") +
       geom_line(data = y6, mapping = aes(x = xdate, y = fastTP, colour = pc)) 
     p12 <- ggplot() +
-      labs(title = "", y = "dfTP ", x = "", colour = "Percentile") +
+      labs(title = "", y = "dfDRP ", x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -539,7 +541,7 @@ for (i in rows) {
       geom_line(data = y12, mapping = aes(x = xdate, y = dfastTP / 15, colour = pc))
     
     p7 <- ggplot() +
-      labs(title = "", y = "mTP " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "mDRP " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -555,7 +557,7 @@ for (i in rows) {
       # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y7, mapping = aes(x = xdate, y = medTP, colour = pc)) 
     p13 <- ggplot() +
-      labs(title = "", y = "dmTP ", x = "", colour = "Percentile") +
+      labs(title = "", y = "dmDRP ", x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -568,7 +570,7 @@ for (i in rows) {
       geom_line(data = y13, mapping = aes(x = xdate, y = dmedTP / 15, colour = pc))
     
     p8 <- ggplot() +
-      labs(title = "", y = "sTP " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "sDRP " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -584,7 +586,7 @@ for (i in rows) {
       # geom_line(data = wrtds[["TP"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y8, mapping = aes(x = xdate, y = slowTP, colour = pc)) 
     p14 <- ggplot() +
-      labs(title = "", y = "dsTP ", x = "", colour = "Percentile") +
+      labs(title = "", y = "dsDRP ", x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -624,16 +626,16 @@ for (i in rows) {
       geom_point(data = res4, mapping = aes(x = xdate, y = TPres))
     if (sum(!is.na(res4$TP)) > 35) {
       res4fit <- rkt(date = res4$xdate2, y = res4$TPres, block = res4$month, correct = TRUE, rep ="m")
-      print(paste("TPres trend = ", res4fit$B / median(res4$TP, na.rm = TRUE), "p = ", res4fit$sl))
+      print(paste(TPname, "res trend = ", res4fit$B / median(res4$TP, na.rm = TRUE), "p = ", res4fit$sl))
     } else if (sum(!is.na(res4$TP)) > 0) {
       res4fit <- rkt(date = res4$xdate2, y = res4$TPres)
-      print(paste("TPres trend = ", res4fit$B / median(res4$TP, na.rm = TRUE), "p = ", res4fit$sl))
+      print(paste(TPname, "res trend = ", res4fit$B / median(res4$TP, na.rm = TRUE), "p = ", res4fit$sl))
     } else {
-      print("Not enough data for TP trend")
+      print(paste("Not enough data for", TPname, "trend"))
     }
 
     p5 <- ggplot() +
-      labs(title = "", y = "TN " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "NO3-N " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -652,7 +654,7 @@ for (i in rows) {
     #   filter(xdate >= dmy("01012005"))
     
     p5r <- ggplot() +
-      labs(title = "", y = "TN residual " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "NO3-N residual " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -665,7 +667,7 @@ for (i in rows) {
       geom_point(data = adata, mapping = aes(x = xdate, y = TNr))
 
     p5r2 <- ggplot() +
-      labs(title = "", y = "TN " ~ (mg ~ L^{-1}), x = "Model Median TN " ~ (mg ~ L^{-1}), colour = "Percentile") +
+      labs(title = "", y = "NO3-N " ~ (mg ~ L^{-1}), x = "Model Median NO3-N" ~ (mg ~ L^{-1}), colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -681,7 +683,7 @@ for (i in rows) {
       geom_point(data = adata, mapping = aes(x = TNmed, y = TN))
 
     p5r3 <- ggplot() +
-      labs(title = "", y = "TN " ~ (mg ~ L^{-1}), x = "Flow " ~ (m^3 ~ s^{-1}), colour = "Percentile") +
+      labs(title = "", y = "NO3-N " ~ (mg ~ L^{-1}), x = "Flow " ~ (m^3 ~ s^{-1}), colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -701,7 +703,7 @@ for (i in rows) {
       geom_point(data = adata, mapping = aes(x = TF, y = TN))
 
     p9 <- ggplot() +
-      labs(title = "", y = "fTN " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "fNO3-N" ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -716,7 +718,7 @@ for (i in rows) {
       # geom_text(data = wrtds[["TN"]], mapping = aes(x = tail(date,1)+years(1), y = tail(high,1)), colour = wrtdscol, label = "95%") +
       geom_line(data = y9, mapping = aes(x = xdate, y = fastTN, colour = pc)) 
     p15 <- ggplot() +
-      labs(title = "", y = "dfTN ", x = "", colour = "Percentile") +
+      labs(title = "", y = "dfNO3-N", x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -728,7 +730,7 @@ for (i in rows) {
       geom_line(data = y15, mapping = aes(x = xdate, y = dfastTN / 15, colour = pc)) 
     
     p10 <- ggplot() +
-      labs(title = "", y = "mTN " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "mNO3-N" ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -743,7 +745,7 @@ for (i in rows) {
       # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y10, mapping = aes(x = xdate, y = medTN, colour = pc)) 
     p16 <- ggplot() +
-      labs(title = "", y = "dmTN ", x = "", colour = "Percentile") +
+      labs(title = "", y = "dmNO3-N", x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -755,7 +757,7 @@ for (i in rows) {
       geom_line(data = y16, mapping = aes(x = xdate, y = dmedTN / 15, colour = pc))
     
     p11 <- ggplot() +
-      labs(title = "", y = "sTN " ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
+      labs(title = "", y = "sNO3-N" ~ (mg ~ L^{-1}), x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -770,7 +772,7 @@ for (i in rows) {
       # geom_line(data = wrtds[["TN"]], mapping = aes(x = date, y = high), colour = wrtdscol, linetype = 6, size = wrtdswt) +
       geom_line(data = y11, mapping = aes(x = xdate, y = slowTN, colour = pc)) 
     p17 <- ggplot() +
-      labs(title = "", y = "dsTN ", x = "", colour = "Percentile") +
+      labs(title = "", y = "dsNO3-N", x = "", colour = "Percentile") +
       theme_cowplot() +
       theme(legend.position = "none", plot.margin = unit(c(0, 0.3, 0, 0), "cm"), plot.title = element_blank()) +
       panel_border(colour = "black") +
@@ -795,12 +797,12 @@ for (i in rows) {
       geom_point(data = res5, mapping = aes(x = xdate, y = TNres))
     if (sum(!is.na(res4$TN)) > 35) {
       res5fit <- rkt(date = res5$xdate2, y = res5$TNres, block = res5$month, correct = TRUE, rep ="m")
-      print(paste("TNres trend = ", res5fit$B / median(res5$TN, na.rm = TRUE), "p = ", res5fit$sl))
+      print(paste(TNname, "res trend = ", res5fit$B / median(res5$TN, na.rm = TRUE), "p = ", res5fit$sl))
     } else if (sum(!is.na(res4$TN)) > 0) {
       res5fit <- rkt(date = res5$xdate2, y = res5$TNres)
-      print(paste("TNres trend = ", res5fit$B / median(res5$TN, na.rm = TRUE), "p = ", res5fit$sl))
+      print(paste(TNname, "res trend = ", res5fit$B / median(res5$TN, na.rm = TRUE), "p = ", res5fit$sl))
     } else {
-      print("Not enough data for TN trend")
+      print(paste("Not enough data for", TNname, "trend"))
     }
 
     # fit plot

@@ -25,7 +25,7 @@ suppressMessages({
 })
 
 # set run directory
-out_path <- 'run - whatawhata/'
+out_path <- 'run - whatawhata - DRP NNN/'
 print(paste0("Fitting data in /", out_path))
 
 # declare functions
@@ -40,8 +40,12 @@ log_file <- file(log_file_name, open='a') # open file for logging
 # read data files
 source('read_data10.r')
 cat(paste(nrow(runlist),'lines in runlist.dat'), file=log_file, sep='\n')
-TPmax <- max(pretty(concdata$tp/1000 * 2))
-TNmax <- max(pretty(concdata$tn/1000 * 2))
+chem1i <- unique(runlist$chem1i)
+chem2i <- unique(runlist$chem2i)
+# TPmax <- max(pretty(concdata$tp/1000 * 2))
+# TNmax <- max(pretty(concdata$tn/1000 * 2))
+TPmax <- max(pretty(concdata[[chem1i]]/1000 * 2))
+TNmax <- max(pretty(concdata[[chem2i]]/1000 * 2))
 
 # model and parameters
 stan_model <- paste(out_path, 'bach_script16.stan', sep='')
@@ -350,6 +354,6 @@ if (exists("fit")){
 # kill_all_Rscript_s()
 
 # plot boxplots and traces
-source('box_plots16.r') 
-source('trace_plots15.r')
+source('box_plots_drp16.r') 
+source('trace_plots_drp15.r')
 
