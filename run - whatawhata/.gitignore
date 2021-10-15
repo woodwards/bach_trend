@@ -1,3 +1,4 @@
 *.rds
 log_*.txt
 *.png
+*_traces.csv

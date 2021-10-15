@@ -149,6 +149,21 @@ for (i in rows) {
     traces[4:17,] <- NA # conc model not valid here
     traces[4:17+17,] <- NA # conc model not valid here
     
+    # write to file
+    varlist <- c("flowtotal", "flownonfast", "flowslow",
+                 "tpmodel", "tnmodel", 
+                 "tpfast", "tpmed", "tpslow", "tnfast", "tnmed", "tnslow",
+                 "dtpfast", "dtpmed", "dtpslow", "dtnfast", "dtnmed", "dtnslow")
+    temp <- traces %>% 
+      rownames_to_column(var = "rowname") %>% 
+      mutate(
+        timestep = str_extract(rowname, "(?<=\\[)[0-9]+(?=\\,)"),
+        vari = str_extract(rowname, "(?<=\\,)[0-9]+(?=\\])"),
+        varname = varlist[as.integer(vari)]
+      )
+    file_name <- paste(out_path, setname, "_traces.csv", sep = "")
+    write_csv(temp, file_name)
+
     # this is probably a better approach, use a single data frame for all variables
     # temp <- traces %>%
     #   select('2.5%', '25%', '50%', '75%', '97.5%') %>%

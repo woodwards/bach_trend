@@ -3,5 +3,5 @@ KiTPTNa	kiripaka	DB4_Kiripaka.xlsx	keep	400	tp	1	0.02	0	tn	1	0.2	0	NA	1	1	3287	3
 KiTPTNb	kiripaka	DB4_Kiripaka.xlsx	keep	400	tp	1	0.02	0	tn	1	0.2	0	NA	3288	3288	9861	9861	9861	3.108425	18	2002-01-01
 MaTPTNa	mangaotama	PW5_Magaotama.xlsx	keep	800	tp	1	0.02	0	tn	1	0.2	0	NA	1	1	3287	3287	3287	2.55335	9	1993-01-01
 MaTPTNb	mangaotama	PW5_Magaotama.xlsx	keep	1000	tp	1	0.02	0	tn	1	0.2	0	NA	3288	3288	9861	9861	9861	2.55335	18	2002-01-01
-WhTPTNa	whakakai	NW5_Whakakai.xlsx	calib	1200	tp	1	0.02	0	tn	1	0.2	0	NA	1	1	3287	3287	3287	2.677825	9	1993-01-01
+WhTPTNa	whakakai	NW5_Whakakai.xlsx	calib	1600	tp	1	0.02	0	tn	1	0.2	0	NA	1	1	3287	3287	3287	2.677825	9	1993-01-01
 WhTPTNb	whakakai	NW5_Whakakai.xlsx	keep	400	tp	1	0.02	0	tn	1	0.2	0	NA	3288	3288	9861	9861	9861	2.677825	18	2002-01-01
